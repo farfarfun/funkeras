@@ -1,4 +1,5 @@
 import os
+from distutils.util import strtobool
 
 __all__ = [
     'keras', 'utils', 'activations', 'applications', 'backend', 'datasets', 'engine',
@@ -6,41 +7,37 @@ __all__ = [
     'metrics', 'models', 'losses', 'optimizers', 'regularizers',
 ]
 
-if 'TF_KERAS' in os.environ and os.environ['TF_KERAS'] != '0':
+TF_KERAS = False
+EAGER_MODE = False
+
+if strtobool(os.environ.get('TF_KERAS', '0')):
+    import tensorflow as tf
     from tensorflow.python import keras
-    from tensorflow.python.keras import utils
-    from tensorflow.python.keras import activations
-    from tensorflow.python.keras import applications
-    from tensorflow.python.keras import backend
-    from tensorflow.python.keras import datasets
-    from tensorflow.python.keras import engine
-    from tensorflow.python.keras import layers
-    from tensorflow.python.keras import preprocessing
-    from tensorflow.python.keras import wrappers
-    from tensorflow.python.keras import callbacks
-    from tensorflow.python.keras import constraints
-    from tensorflow.python.keras import initializers
-    from tensorflow.python.keras import metrics
-    from tensorflow.python.keras import models
-    from tensorflow.python.keras import losses
-    from tensorflow.python.keras import optimizers
-    from tensorflow.python.keras import regularizers
+
+    TF_KERAS = True
+    if strtobool(os.environ.get('TF_EAGER', '0')):
+        if int(tf.version.VERSION.split('.')[0]) < 2:
+            import tensorflow as tf
+
+            tf.enable_eager_execution()
+        EAGER_MODE = True
 else:
     import keras
-    from keras import utils
-    from keras import activations
-    from keras import applications
-    from keras import backend
-    from keras import datasets
-    from keras import engine
-    from keras import layers
-    from keras import preprocessing
-    from keras import wrappers
-    from keras import callbacks
-    from keras import constraints
-    from keras import initializers
-    from keras import metrics
-    from keras import models
-    from keras import losses
-    from keras import optimizers
-    from keras import regularizers
+
+utils = keras.utils
+activations = keras.activations
+applications = keras.applications
+backend = keras.backend
+datasets = keras.datasets
+engine = keras.engine
+layers = keras.layers
+preprocessing = keras.preprocessing
+wrappers = keras.wrappers
+callbacks = keras.callbacks
+constraints = keras.constraints
+initializers = keras.initializers
+metrics = keras.metrics
+models = keras.models
+losses = keras.losses
+optimizers = keras.optimizers
+regularizers = keras.regularizers

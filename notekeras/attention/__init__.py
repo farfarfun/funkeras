@@ -1,5 +1,4 @@
 from .multi_head import MultiHead
 from .multi_head_attention import MultiHeadAttention
 from .scaled_dot_attention import ScaledDotProductAttention
-from .seq_self_attention import SeqSelfAttention
-from .seq_weighted_attention import SeqWeightedAttention
+from .self_attention import SeqSelfAttention, SeqWeightedAttention

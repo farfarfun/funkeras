@@ -1,13 +1,11 @@
 import numpy as np
-from keras_embed_sim import EmbeddingRet, EmbeddingSim
-from keras_layer_normalization import LayerNormalization
-from keras_pos_embd import TrigPosEmbedding
 
 from .backend import keras
-# from keras_multi_head import MultiHeadAttention
 from ..attention import MultiHeadAttention
-# from keras_position_wise_feed_forward import FeedForward
 from ..layer import FeedForward
+from ..layer.embedding import EmbeddingRet, EmbeddingSim
+from ..layer.embedding import TrigPosEmbedding
+from ..layer.normalize import LayerNormalization
 
 __all__ = [
     'get_custom_objects', 'get_encoders', 'get_decoders', 'get_model', 'decode',
