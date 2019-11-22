@@ -1,7 +1,7 @@
 import numpy as np
 
 # from keras_transformer import get_model
-from ..transformer import get_model
+from notekeras.layer.transformer import get_model
 
 # 构建一个toy词典
 tokens = 'all work and no play makes jack a dull boy'.split(' ')

@@ -1,5 +1,5 @@
-from .backend import backend as K
-from .backend import keras
+from notekeras.backend import backend as K
+from notekeras.backend import keras
 
 
 class FeedForward(keras.layers.Layer):
