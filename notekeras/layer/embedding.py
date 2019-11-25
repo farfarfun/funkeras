@@ -121,28 +121,6 @@ class EmbeddingSimilarity(keras.layers.Layer):
         return keras.activations.softmax(outputs)
 
 
-class EmbeddingRet(keras.layers.Embedding):
-    """Embedding layer with weights returned."""
-
-    def compute_output_shape(self, input_shape):
-        return [
-            super(EmbeddingRet, self).compute_output_shape(input_shape),
-            (self.input_dim, self.output_dim),
-        ]
-
-    def compute_mask(self, inputs, mask=None):
-        return [
-            super(EmbeddingRet, self).compute_mask(inputs, mask),
-            None,
-        ]
-
-    def call(self, inputs):
-        return [
-            super(EmbeddingRet, self).call(inputs),
-            K.identity(self.embeddings),
-        ]
-
-
 class EmbeddingSim(keras.layers.Layer):
     """Calculate similarity between features and token embeddings with bias term."""
 
@@ -214,6 +192,28 @@ class EmbeddingSim(keras.layers.Layer):
         if self.use_bias:
             outputs = K.bias_add(outputs, self.bias)
         return keras.activations.softmax(outputs)
+
+
+class EmbeddingRet(keras.layers.Embedding):
+    """Embedding layer with weights returned."""
+
+    def compute_output_shape(self, input_shape):
+        return [
+            super(EmbeddingRet, self).compute_output_shape(input_shape),
+            (self.input_dim, self.output_dim),
+        ]
+
+    def compute_mask(self, inputs, mask=None):
+        return [
+            super(EmbeddingRet, self).compute_mask(inputs, mask),
+            None,
+        ]
+
+    def call(self, inputs):
+        return [
+            super(EmbeddingRet, self).call(inputs),
+            K.identity(self.embeddings),
+        ]
 
 
 class PositionEmbedding(keras.layers.Layer):

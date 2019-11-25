@@ -16,6 +16,12 @@ __all__ = [
 
 
 def checkpoint_loader(checkpoint_file):
+    """
+    从checkpoint加载变量
+    :param checkpoint_file: 模型文件
+    :return:
+    """
+
     def _loader(name):
         return tf.train.load_variable(checkpoint_file, name)
 
@@ -65,17 +71,17 @@ def build_model_from_config(config_file,
     return model, config
 
 
-def load_model_weights_from_checkpoint(model,
-                                       config,
-                                       checkpoint_file,
-                                       training=False):
-    """Load trained official model from checkpoint.
+def load_model_weights_from_checkpoint(model, config, checkpoint_file, training=False):
+    """
+    从checkpoint中加载官方的模型
+    Load trained official model from checkpoint.
 
     :param model: Built keras model.
-    :param config: Loaded configuration file.
-    :param checkpoint_file: The path to the checkpoint files, should end with '.ckpt'.
-    :param training: If training, the whole model will be returned.
-                     Otherwise, the MLM and NSP parts will be ignored.
+    :param config: 配置文件路径 Loaded configuration file.
+    :param checkpoint_file:必须以.ckpt结尾的checkpoint文件路径 The path to the checkpoint files, should end with '.ckpt'.
+    :param training: 如果需要训练，会返回整个模型
+                    If training, the whole model will be returned.
+                    Otherwise, the MLM and NSP parts will be ignored.
     """
     loader = checkpoint_loader(checkpoint_file)
 
