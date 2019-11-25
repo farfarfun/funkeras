@@ -1,38 +1,106 @@
+from __future__ import unicode_literals
+
 import codecs
 import json
+import os
+import shutil
+from collections import namedtuple
 
 import numpy as np
 import tensorflow as tf
 
 from notekeras.backend import keras
-from notekeras.layer.bert import get_model
+from notekeras.layer import bert
 
 __all__ = [
     'build_model_from_config',
     'load_model_weights_from_checkpoint',
     'load_trained_model_from_checkpoint',
     'load_vocabulary',
+    'PreTrainedInfo',
+    'PreTrainedList',
+    'get_pre_trained_path',
+    'get_checkpoint_paths',
+    'get_checkpoint_config',
 ]
 
+PreTrainedInfo = namedtuple('PreTrainedInfo', ['url', 'extract_name', 'target_name'])
+CheckpointPaths = namedtuple('CheckpointPaths', ['config', 'checkpoint', 'vocab'])
 
-def checkpoint_loader(checkpoint_file):
+
+class PreTrainedList(object):
+    __test__ = PreTrainedInfo(
+        'https://github.com/CyberZHG/keras-bert/archive/master.zip',
+        'keras-bert-master',
+        'keras-bert',
+    )
+
+    multi_cased_base = 'https://storage.googleapis.com/bert_models/2018_11_23/multi_cased_L-12_H-768_A-12.zip'
+    chinese_base = 'https://storage.googleapis.com/bert_models/2018_11_03/chinese_L-12_H-768_A-12.zip'
+    wwm_uncased_large = 'https://storage.googleapis.com/bert_models/2019_05_30/wwm_uncased_L-24_H-1024_A-16.zip'
+    wwm_cased_large = 'https://storage.googleapis.com/bert_models/2019_05_30/wwm_cased_L-24_H-1024_A-16.zip'
+    chinese_wwm_base = PreTrainedInfo(
+        'https://storage.googleapis.com/hfl-rc/chinese-bert/chinese_wwm_L-12_H-768_A-12.zip',
+        'publish',
+        'chinese_wwm_L-12_H-768_A-12',
+    )
+
+
+def get_pre_trained_path(info=PreTrainedList.chinese_wwm_base):
     """
-    从checkpoint加载变量
-    :param checkpoint_file: 模型文件
+    获取模型路径
+    :param info:模型路径
     :return:
     """
+    path = info
+    if isinstance(info, PreTrainedInfo):
+        path = info.url
+    path = keras.utils.get_file(fname=os.path.split(path)[-1], origin=path, extract=True)
+    base_part, file_part = os.path.split(path)
+    file_part = file_part.split('.')[0]
+    if isinstance(info, PreTrainedInfo):
+        extract_path = os.path.join(base_part, info.extract_name)
+        target_path = os.path.join(base_part, info.target_name)
+        if not os.path.exists(target_path):
+            shutil.move(extract_path, target_path)
+        file_part = info.target_name
+    return os.path.join(base_part, file_part)
 
-    def _loader(name):
-        return tf.train.load_variable(checkpoint_file, name)
 
-    return _loader
+def get_checkpoint_paths(model_path):
+    config_path = os.path.join(model_path, 'bert_config.json')
+    checkpoint_path = os.path.join(model_path, 'bert_model.ckpt')
+    vocab_path = os.path.join(model_path, 'vocab.txt')
+    return CheckpointPaths(config_path, checkpoint_path, vocab_path)
 
 
-def build_model_from_config(config_file,
-                            training=False,
-                            trainable=None,
-                            output_layer_num=1,
-                            seq_len=int(1e9),
+def get_checkpoint_config(info=PreTrainedList.chinese_wwm_base):
+    """
+    获取模型路径配置信息
+    :param info:模型路径
+    :return:
+    """
+    path = info
+    if isinstance(info, PreTrainedInfo):
+        path = info.url
+    path = keras.utils.get_file(fname=os.path.split(path)[-1], origin=path, extract=True)
+    base_part, file_part = os.path.split(path)
+    file_part = file_part.split('.')[0]
+    if isinstance(info, PreTrainedInfo):
+        extract_path = os.path.join(base_part, info.extract_name)
+        target_path = os.path.join(base_part, info.target_name)
+        if not os.path.exists(target_path):
+            shutil.move(extract_path, target_path)
+        file_part = info.target_name
+
+    model_path = os.path.join(base_part, file_part)
+    config_path = os.path.join(model_path, 'bert_config.json')
+    checkpoint_path = os.path.join(model_path, 'bert_model.ckpt')
+    vocab_path = os.path.join(model_path, 'vocab.txt')
+    return CheckpointPaths(config_path, checkpoint_path, vocab_path)
+
+
+def build_model_from_config(config_file, training=False, trainable=None, output_layer_num=1, seq_len=int(1e9),
                             **kwargs):
     """Build the model from config file.
 
@@ -52,19 +120,18 @@ def build_model_from_config(config_file,
         config['max_position_embeddings'] = seq_len = min(seq_len, config['max_position_embeddings'])
     if trainable is None:
         trainable = training
-    model = get_model(
-        token_num=config['vocab_size'],
-        pos_num=config['max_position_embeddings'],
-        seq_len=seq_len,
-        embed_dim=config['hidden_size'],
-        transformer_num=config['num_hidden_layers'],
-        head_num=config['num_attention_heads'],
-        feed_forward_dim=config['intermediate_size'],
-        feed_forward_activation=config['hidden_act'],
-        training=training,
-        trainable=trainable,
-        output_layer_num=output_layer_num,
-        **kwargs)
+    model = bert.get_model(token_num=config['vocab_size'],
+                           pos_num=config['max_position_embeddings'],
+                           seq_len=seq_len,
+                           embed_dim=config['hidden_size'],
+                           transformer_num=config['num_hidden_layers'],
+                           head_num=config['num_attention_heads'],
+                           feed_forward_dim=config['intermediate_size'],
+                           feed_forward_activation=config['hidden_act'],
+                           training=training,
+                           trainable=trainable,
+                           output_layer_num=output_layer_num,
+                           **kwargs)
     if not training:
         inputs, outputs = model
         model = keras.models.Model(inputs=inputs, outputs=outputs)
@@ -149,17 +216,12 @@ def load_model_weights_from_checkpoint(model, config, checkpoint_file, training=
         ])
 
 
-def load_trained_model_from_checkpoint(config_file,
-                                       checkpoint_file,
-                                       training=False,
-                                       trainable=None,
-                                       output_layer_num=1,
-                                       seq_len=int(1e9),
-                                       **kwargs):
+def load_trained_model_from_checkpoint(config_file, checkpoint_file, training=False, trainable=None,
+                                       output_layer_num=1, seq_len=int(1e9), **kwargs):
     """Load trained official model from checkpoint.
 
     :param config_file: The path to the JSON configuration file.
-    :param checkpoint_file: The path to the checkpoint files, should end with '.ckpt'.
+    :param checkpoint_file: checkpoint_file.
     :param training: If training, the whole model will be returned.
                      Otherwise, the MLM and NSP parts will be ignored.
     :param trainable: Whether the model is trainable. The default value is the same with `training`.
@@ -169,13 +231,16 @@ def load_trained_model_from_checkpoint(config_file,
                     position embeddings will be sliced to fit the new length.
     :return: model
     """
-    model, config = build_model_from_config(
-        config_file,
-        training=training,
-        trainable=trainable,
-        output_layer_num=output_layer_num,
-        seq_len=seq_len,
-        **kwargs)
+    # model_path = get_pre_trained_path(model_info)
+    # paths = get_checkpoint_paths(model_path)
+    # config_file = paths.config
+    # checkpoint_file = paths.checkpoint
+
+    # 创建模型
+    model, config = build_model_from_config(config_file, training=training, trainable=trainable,
+                                            output_layer_num=output_layer_num, seq_len=seq_len, **kwargs)
+
+    # 从checkpoint中加载网络权重
     load_model_weights_from_checkpoint(model, config, checkpoint_file, training=training)
     return model
 
@@ -187,3 +252,16 @@ def load_vocabulary(vocab_path):
             token = line.strip()
             token_dict[token] = len(token_dict)
     return token_dict
+
+
+def checkpoint_loader(checkpoint_file):
+    """
+    从checkpoint加载变量
+    :param checkpoint_file: 模型文件
+    :return:
+    """
+
+    def _loader(name):
+        return tf.train.load_variable(checkpoint_file, name)
+
+    return _loader

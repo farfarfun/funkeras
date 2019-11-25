@@ -1,6 +1,6 @@
 import unicodedata
 
-from notekeras.bert import TOKEN_CLS, TOKEN_SEP, TOKEN_UNK
+from notekeras.layer.bert import TOKEN_CLS, TOKEN_SEP, TOKEN_UNK
 
 
 class Tokenizer(object):
