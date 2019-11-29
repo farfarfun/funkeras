@@ -523,7 +523,7 @@ class EncoderComponentList(keras.models.Model):
 
     def _build(self):
         for i in range(self.encoder_num):
-            self.layers.append(EncoderComponent(name='Encoder-%d' % (i + 1),
+            self.layers.append(EncoderComponent(name='{}-{}'.format(self.name, i + 1),
                                                 head_num=self.head_num,
                                                 hidden_dim=self.hidden_dim,
                                                 attention_activation=self.attention_activation,
@@ -579,7 +579,7 @@ class DecoderComponentList(keras.models.Model):
 
     def _build(self):
         for i in range(self.decoder_num):
-            self.layers.append(DecoderComponent(name='Decoder-%d' % (i + 1),
+            self.layers.append(DecoderComponent(name='{}-{}'.format(self.name, i + 1),
                                                 head_num=self.head_num,
                                                 hidden_dim=self.hidden_dim,
                                                 attention_activation=self.attention_activation,
@@ -601,7 +601,7 @@ class DecoderComponentList(keras.models.Model):
 
     def compute_output_shape(self, input_shape):
         return input_shape
-    
+
 
 def get_encoders_layers(encoder_num,
                         input_layer,
