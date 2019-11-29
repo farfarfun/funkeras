@@ -258,10 +258,7 @@ class WrapCode(keras.models.Model):
         self.normal_layer = LayerNormalization(trainable=self.trainable, name='%s-Norm' % self.name, )
         self.layers.append(self.normal_layer)
 
-    def compute_output_shape(self, input_shape):
-        return input_shape
-
-    def call(self, input_layer, **kwargs):
+    def __call__(self, input_layer, **kwargs):
         build_output = self.attention_layer(input_layer)
 
         if self.dropout_rate > 0.0:
@@ -280,6 +277,9 @@ class WrapCode(keras.models.Model):
         # 正则化
         normal_layer = self.normal_layer(add_layer)
         return normal_layer
+
+    def compute_output_shape(self, input_shape):
+        return input_shape
 
     def get_config(self):
         config = {
@@ -365,6 +365,9 @@ class EncoderComponent(keras.models.Model):
         feed2 = self.feed_forward_layer2(att2)
 
         return feed2
+
+    def compute_output_shape(self, input_shape):
+        return input_shape
 
     def get_config(self):
         config = {
@@ -488,7 +491,7 @@ class DecoderComponent(keras.models.Model):
         return config
 
 
-class EncoderComponentList:
+class EncoderComponentList(keras.models.Model):
     def __init__(self,
                  encoder_num,
                  head_num,
@@ -501,6 +504,7 @@ class EncoderComponentList:
                  use_adapter=False,
                  adapter_units=None,
                  adapter_activation='relu'):
+        super(EncoderComponentList, self).__init__()
         self.name = name
         self.encoder_num = encoder_num
         self.head_num = head_num
@@ -513,8 +517,12 @@ class EncoderComponentList:
         self.adapter_units = adapter_units
         self.adapter_activation = adapter_activation
 
-        self.layers = []
-        for i in range(encoder_num):
+        # self.layers = []
+
+        self._build()
+
+    def _build(self):
+        for i in range(self.encoder_num):
             self.layers.append(EncoderComponent(name='Encoder-%d' % (i + 1),
                                                 head_num=self.head_num,
                                                 hidden_dim=self.hidden_dim,
@@ -526,9 +534,6 @@ class EncoderComponentList:
                                                 adapter_units=self.adapter_units,
                                                 adapter_activation=self.adapter_activation,
                                                 ))
-        self.build()
-
-    def build(self):
         pass
 
     def __call__(self, inputs, **kwargs):
@@ -538,8 +543,11 @@ class EncoderComponentList:
             last_layer = layer(last_layer)
         return last_layer
 
+    def compute_output_shape(self, input_shape):
+        return input_shape
 
-class DecoderComponentList:
+
+class DecoderComponentList(keras.models.Model):
     def __init__(self,
                  decoder_num,
                  head_num,
@@ -552,6 +560,7 @@ class DecoderComponentList:
                  use_adapter=False,
                  adapter_units=None,
                  adapter_activation='relu'):
+        super(DecoderComponentList, self).__init__()
         self.name = name
         self.decoder_num = decoder_num
         self.head_num = head_num
@@ -564,8 +573,12 @@ class DecoderComponentList:
         self.adapter_units = adapter_units
         self.adapter_activation = adapter_activation
 
-        self.layers = []
-        for i in range(decoder_num):
+        # self.layers = []
+
+        self._build()
+
+    def _build(self):
+        for i in range(self.decoder_num):
             self.layers.append(DecoderComponent(name='Decoder-%d' % (i + 1),
                                                 head_num=self.head_num,
                                                 hidden_dim=self.hidden_dim,
@@ -577,9 +590,6 @@ class DecoderComponentList:
                                                 adapter_units=self.adapter_units,
                                                 adapter_activation=self.adapter_activation,
                                                 ))
-        self.build()
-
-    def build(self):
         pass
 
     def __call__(self, inputs, **kwargs):
@@ -589,6 +599,9 @@ class DecoderComponentList:
             last_layer = layer([last_layer, encoded_layer])
         return last_layer
 
+    def compute_output_shape(self, input_shape):
+        return input_shape
+    
 
 def get_encoders_layers(encoder_num,
                         input_layer,

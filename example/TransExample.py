@@ -64,4 +64,4 @@ print(model.to_json())
 # plot_model(model, to_file='model_test.png', show_shapes=True, expand_nested=True)
 
 plot_model(model, to_file='model.png', show_shapes=True)
-plot_model(model.get_layer('Encoder-2-FeedForward'), to_file='model2.png', show_shapes=True)
+# plot_model(model.get_layer('Encoder-2-FeedForward'), to_file='model2.png', show_shapes=True)
