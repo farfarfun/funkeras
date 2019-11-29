@@ -1,17 +1,14 @@
 import copy
 
-from notekeras.backend import TF_KERAS
-from notekeras.backend import backend as K
-from notekeras.backend import keras
+from keras.layers.wrappers import Wrapper
 
-try:
-    Wrapper = keras.layers.Wrapper
-except AttributeError:
-    Wrapper = keras.layers.wrappers.Wrapper
+from notekeras.backend import TF_KERAS
+from notekeras.backend import backend as K, layers
+from notekeras.backend import keras
 
 
 class ScaledDotProductAttention(keras.layers.Layer):
-    r"""
+    """
     注意力模型主要包含三个输入 即Q(queries), K(keys), V(values)。按照下面这个公式计算的
 
     \text{Attention}(Q, K, V) = \text{softmax}(\frac{Q K^T}{\sqrt{d_k}}) V
@@ -19,10 +16,7 @@ class ScaledDotProductAttention(keras.layers.Layer):
     详见论文: https://arxiv.org/pdf/1706.03762.pdf
     """
 
-    def __init__(self,
-                 return_attention=False,
-                 history_only=False,
-                 **kwargs):
+    def __init__(self, return_attention=False, history_only=False, **kwargs):
         """Initialize the layer.
 
         :param return_attention: 是否需要返回注意力模型权重 Whether to return attention weights.
@@ -44,7 +38,8 @@ class ScaledDotProductAttention(keras.layers.Layer):
             'history_only': self.history_only,
         }
         base_config = super(ScaledDotProductAttention, self).get_config()
-        return dict(list(base_config.items()) + list(config.items()))
+        # return dict(list(base_config.items()) + list(config.items()))
+        return dict(base_config, **config)
 
     def compute_output_shape(self, input_shape):
         """
@@ -78,7 +73,6 @@ class ScaledDotProductAttention(keras.layers.Layer):
     def call(self, inputs, mask=None, **kwargs):
         """
         \text{Attention}(Q, K, V) = \text{softmax}(\frac{Q K^T}{\sqrt{d_k}}) V
-
         :param inputs:支持传入list 即[Q,K,V]，也可以之传入一个即Q=K=V=I
         :param mask:
         :param kwargs:
@@ -107,12 +101,11 @@ class ScaledDotProductAttention(keras.layers.Layer):
         return v
 
 
-class SeqSelfAttention(keras.layers.Layer):
+class SeqSelfAttention(layers.Layer):
     ATTENTION_TYPE_ADD = 'additive'
     ATTENTION_TYPE_MUL = 'multiplicative'
 
-    def __init__(self,
-                 units=32,
+    def __init__(self, units=32,
                  attention_width=None,
                  attention_type=ATTENTION_TYPE_ADD,
                  return_attention=False,
@@ -346,7 +339,7 @@ class SeqSelfAttention(keras.layers.Layer):
         return {'SeqSelfAttention': SeqSelfAttention}
 
 
-class SeqWeightedAttention(keras.layers.Layer):
+class SeqWeightedAttention(layers.Layer):
     r"""Y = \text{softmax}(XW + b) X
 
     See: https://arxiv.org/pdf/1708.00524.pdf
@@ -365,7 +358,8 @@ class SeqWeightedAttention(keras.layers.Layer):
             'return_attention': self.return_attention,
         }
         base_config = super(SeqWeightedAttention, self).get_config()
-        return dict(list(base_config.items()) + list(config.items()))
+        # return dict(list(base_config.items()) + list(config.items()))
+        return dict(base_config, **config)
 
     def build(self, input_shape):
         self.W = self.add_weight(shape=(int(input_shape[2]), 1),
@@ -488,7 +482,8 @@ class MultiHead(Wrapper):
             })
         base_config = super(MultiHead, self).get_config()
         base_config.pop('layer')
-        return dict(list(base_config.items()) + list(config.items()))
+        # return dict(list(base_config.items()) + list(config.items()))
+        return dict(base_config, **config)
 
     @classmethod
     def from_config(cls, config, custom_objects=None):
@@ -515,7 +510,7 @@ class MultiHead(Wrapper):
         else:
             self.input_spec = keras.engine.InputSpec(shape=input_shape)
         if isinstance(self.layers, list) and len(self.layers) == 0:
-            self.layer.build(input_shape)
+            self.layer.build()
             config = self.layer.get_config()
             name = config['name']
             self.layers = []
@@ -524,7 +519,7 @@ class MultiHead(Wrapper):
                 copied['name'] = name + '_{}'.format(i + 1)
                 self.layers.append(self.layer.__class__.from_config(copied))
         for layer in self.layers:
-            layer.build(input_shape)
+            layer.build()
         if self.hidden_dim is not None:
             self.W = self.add_weight(
                 shape=(int(input_shape[-1]), self.hidden_dim * self.layer_num),
@@ -567,7 +562,7 @@ class MultiHead(Wrapper):
         if keras.utils.generic_utils.has_arg(self.layer.call, 'mask') and mask is not None:
             kwargs['mask'] = mask
         if self.hidden_dim is None:
-            outputs = [K.expand_dims(layer.call(inputs, **kwargs)) for layer in self.layers]
+            outputs = [K.expand_dims(layer.call(inputs, )) for layer in self.layers]
         else:
             outputs = []
             for i, layer in enumerate(self.layers):
@@ -576,7 +571,7 @@ class MultiHead(Wrapper):
                 transformed = K.dot(inputs, self.W[:, begin:end])
                 if self.use_bias:
                     transformed += self.b[begin:end]
-                outputs.append(K.expand_dims(layer.call(transformed, **kwargs)))
+                outputs.append(K.expand_dims(layer.call(transformed, )))
         return K.concatenate(outputs, axis=-1)
 
     @property
@@ -693,7 +688,8 @@ class MultiHeadAttention(keras.layers.Layer):
             'history_only': self.history_only,
         }
         base_config = super(MultiHeadAttention, self).get_config()
-        return dict(list(base_config.items()) + list(config.items()))
+        # return dict(list(base_config.items()) + list(config.items()))
+        return dict(base_config, **config)
 
     def compute_output_shape(self, input_shape):
         if isinstance(input_shape, list):
@@ -714,66 +710,58 @@ class MultiHeadAttention(keras.layers.Layer):
         feature_dim = int(v[-1])
         if feature_dim % self.head_num != 0:
             raise IndexError('Invalid head number %d with the given input dim %d' % (self.head_num, feature_dim))
-        self.Wq = self.add_weight(
-            shape=(int(q[-1]), feature_dim),
-            initializer=self.kernel_initializer,
-            regularizer=self.kernel_regularizer,
-            constraint=self.kernel_constraint,
-            name='%s_Wq' % self.name,
-        )
+        self.Wq = self.add_weight(shape=(int(q[-1]), feature_dim),
+                                  initializer=self.kernel_initializer,
+                                  regularizer=self.kernel_regularizer,
+                                  constraint=self.kernel_constraint,
+                                  name='%s_Wq' % self.name,
+                                  )
         if self.use_bias:
-            self.bq = self.add_weight(
-                shape=(feature_dim,),
-                initializer=self.bias_initializer,
-                regularizer=self.bias_regularizer,
-                constraint=self.bias_constraint,
-                name='%s_bq' % self.name,
-            )
-        self.Wk = self.add_weight(
-            shape=(int(k[-1]), feature_dim),
-            initializer=self.kernel_initializer,
-            regularizer=self.kernel_regularizer,
-            constraint=self.kernel_constraint,
-            name='%s_Wk' % self.name,
-        )
+            self.bq = self.add_weight(shape=(feature_dim,),
+                                      initializer=self.bias_initializer,
+                                      regularizer=self.bias_regularizer,
+                                      constraint=self.bias_constraint,
+                                      name='%s_bq' % self.name,
+                                      )
+        self.Wk = self.add_weight(shape=(int(k[-1]), feature_dim),
+                                  initializer=self.kernel_initializer,
+                                  regularizer=self.kernel_regularizer,
+                                  constraint=self.kernel_constraint,
+                                  name='%s_Wk' % self.name,
+                                  )
         if self.use_bias:
-            self.bk = self.add_weight(
-                shape=(feature_dim,),
-                initializer=self.bias_initializer,
-                regularizer=self.bias_regularizer,
-                constraint=self.bias_constraint,
-                name='%s_bk' % self.name,
-            )
-        self.Wv = self.add_weight(
-            shape=(int(v[-1]), feature_dim),
-            initializer=self.kernel_initializer,
-            regularizer=self.kernel_regularizer,
-            constraint=self.kernel_constraint,
-            name='%s_Wv' % self.name,
-        )
+            self.bk = self.add_weight(shape=(feature_dim,),
+                                      initializer=self.bias_initializer,
+                                      regularizer=self.bias_regularizer,
+                                      constraint=self.bias_constraint,
+                                      name='%s_bk' % self.name,
+                                      )
+        self.Wv = self.add_weight(shape=(int(v[-1]), feature_dim),
+                                  initializer=self.kernel_initializer,
+                                  regularizer=self.kernel_regularizer,
+                                  constraint=self.kernel_constraint,
+                                  name='%s_Wv' % self.name,
+                                  )
         if self.use_bias:
-            self.bv = self.add_weight(
-                shape=(feature_dim,),
-                initializer=self.bias_initializer,
-                regularizer=self.bias_regularizer,
-                constraint=self.bias_constraint,
-                name='%s_bv' % self.name,
-            )
-        self.Wo = self.add_weight(
-            shape=(feature_dim, feature_dim),
-            initializer=self.kernel_initializer,
-            regularizer=self.kernel_regularizer,
-            constraint=self.kernel_constraint,
-            name='%s_Wo' % self.name,
-        )
+            self.bv = self.add_weight(shape=(feature_dim,),
+                                      initializer=self.bias_initializer,
+                                      regularizer=self.bias_regularizer,
+                                      constraint=self.bias_constraint,
+                                      name='%s_bv' % self.name,
+                                      )
+        self.Wo = self.add_weight(shape=(feature_dim, feature_dim),
+                                  initializer=self.kernel_initializer,
+                                  regularizer=self.kernel_regularizer,
+                                  constraint=self.kernel_constraint,
+                                  name='%s_Wo' % self.name,
+                                  )
         if self.use_bias:
-            self.bo = self.add_weight(
-                shape=(feature_dim,),
-                initializer=self.bias_initializer,
-                regularizer=self.bias_regularizer,
-                constraint=self.bias_constraint,
-                name='%s_bo' % self.name,
-            )
+            self.bo = self.add_weight(shape=(feature_dim,),
+                                      initializer=self.bias_initializer,
+                                      regularizer=self.bias_regularizer,
+                                      constraint=self.bias_constraint,
+                                      name='%s_bo' % self.name,
+                                      )
         super(MultiHeadAttention, self).build(input_shape)
 
     @staticmethod
@@ -822,21 +810,18 @@ class MultiHeadAttention(keras.layers.Layer):
             q = self.activation(q)
             k = self.activation(k)
             v = self.activation(v)
-        y = ScaledDotProductAttention(
-            history_only=self.history_only,
-            name='%s-Attention' % self.name,
-        )(
-            inputs=[
-                self._reshape_to_batches(q, self.head_num),
-                self._reshape_to_batches(k, self.head_num),
-                self._reshape_to_batches(v, self.head_num),
-            ],
-            mask=[
-                self._reshape_mask(q_mask, self.head_num),
-                self._reshape_mask(k_mask, self.head_num),
-                self._reshape_mask(v_mask, self.head_num),
-            ],
-        )
+        y = ScaledDotProductAttention(history_only=self.history_only,
+                                      name='%s-Attention' % self.name,
+                                      )(inputs=[self._reshape_to_batches(q, self.head_num),
+                                                self._reshape_to_batches(k, self.head_num),
+                                                self._reshape_to_batches(v, self.head_num),
+                                                ],
+                                        mask=[
+                                            self._reshape_mask(q_mask, self.head_num),
+                                            self._reshape_mask(k_mask, self.head_num),
+                                            self._reshape_mask(v_mask, self.head_num),
+                                        ],
+                                        )
         y = self._reshape_from_batches(y, self.head_num)
         y = K.dot(y, self.Wo)
         if self.use_bias:

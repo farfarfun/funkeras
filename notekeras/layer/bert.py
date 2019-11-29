@@ -9,7 +9,7 @@ from notekeras.layer.inputs import get_inputs
 from notekeras.layer.masked import Masked
 from notekeras.layer.normalize import LayerNormalization
 from notekeras.layer.transformer import get_custom_objects as get_encoder_custom_objects
-from notekeras.layer.transformer import get_encoders
+from notekeras.layer.transformer import get_encoders_layers
 from notekeras.optimizers import AdamWarmup
 
 __all__ = [
@@ -87,68 +87,47 @@ def get_model(token_num,
         return trainable
 
     inputs = get_inputs(seq_len=seq_len)
-    embed_layer, embed_weights = get_embedding(
-        inputs,
-        token_num=token_num,
-        embed_dim=embed_dim,
-        pos_num=pos_num,
-        dropout_rate=dropout_rate,
-    )
+    embed_layer, embed_weights = get_embedding(inputs,
+                                               token_num=token_num,
+                                               embed_dim=embed_dim,
+                                               pos_num=pos_num,
+                                               dropout_rate=dropout_rate,
+                                               )
     if use_task_embed:
-        task_input = keras.layers.Input(
-            shape=(1,),
-            name='Input-Task',
-        )
-        embed_layer = TaskEmbedding(
-            input_dim=task_num,
-            output_dim=embed_dim,
-            mask_zero=False,
-            name='Embedding-Task',
-        )([embed_layer, task_input])
+        task_input = keras.layers.Input(shape=(1,), name='Input-Task', )
+        embed_layer = TaskEmbedding(input_dim=task_num,
+                                    output_dim=embed_dim,
+                                    mask_zero=False,
+                                    name='Embedding-Task',
+                                    )([embed_layer, task_input])
         inputs = inputs[:2] + [task_input, inputs[-1]]
     if dropout_rate > 0.0:
-        dropout_layer = keras.layers.Dropout(
-            rate=dropout_rate,
-            name='Embedding-Dropout',
-        )(embed_layer)
+        dropout_layer = keras.layers.Dropout(rate=dropout_rate, name='Embedding-Dropout', )(embed_layer)
     else:
         dropout_layer = embed_layer
-    embed_layer = LayerNormalization(
-        trainable=trainable,
-        name='Embedding-Norm',
-    )(dropout_layer)
-    transformed = get_encoders(
-        encoder_num=transformer_num,
-        input_layer=embed_layer,
-        head_num=head_num,
-        hidden_dim=feed_forward_dim,
-        attention_activation=attention_activation,
-        feed_forward_activation=feed_forward_activation,
-        dropout_rate=dropout_rate,
-        use_adapter=use_adapter,
-        adapter_units=adapter_units,
-        adapter_activation=gelu,
-    )
+    embed_layer = LayerNormalization(trainable=trainable, name='Embedding-Norm', )(dropout_layer)
+    transformed = get_encoders_layers(encoder_num=transformer_num,
+                                      input_layer=embed_layer,
+                                      head_num=head_num,
+                                      hidden_dim=feed_forward_dim,
+                                      attention_activation=attention_activation,
+                                      feed_forward_activation=feed_forward_activation,
+                                      dropout_rate=dropout_rate,
+                                      use_adapter=use_adapter,
+                                      adapter_units=adapter_units,
+                                      adapter_activation=gelu,
+                                      )
     if training:
-        mlm_dense_layer = keras.layers.Dense(
-            units=embed_dim,
-            activation=feed_forward_activation,
-            name='MLM-Dense',
-        )(transformed)
+        mlm_dense_layer = keras.layers.Dense(units=embed_dim,
+                                             activation=feed_forward_activation,
+                                             name='MLM-Dense',
+                                             )(transformed)
         mlm_norm_layer = LayerNormalization(name='MLM-Norm')(mlm_dense_layer)
         mlm_pred_layer = EmbeddingSimilarity(name='MLM-Sim')([mlm_norm_layer, embed_weights])
         masked_layer = Masked(name='MLM')([mlm_pred_layer, inputs[-1]])
         extract_layer = Extract(index=0, name='Extract')(transformed)
-        nsp_dense_layer = keras.layers.Dense(
-            units=embed_dim,
-            activation='tanh',
-            name='NSP-Dense',
-        )(extract_layer)
-        nsp_pred_layer = keras.layers.Dense(
-            units=2,
-            activation='softmax',
-            name='NSP',
-        )(nsp_dense_layer)
+        nsp_dense_layer = keras.layers.Dense(units=embed_dim, activation='tanh', name='NSP-Dense', )(extract_layer)
+        nsp_pred_layer = keras.layers.Dense(units=2, activation='softmax', name='NSP', )(nsp_dense_layer)
         model = keras.models.Model(inputs=inputs, outputs=[masked_layer, nsp_pred_layer])
         for layer in model.layers:
             layer.trainable = _trainable(layer)
@@ -192,16 +171,15 @@ def compile_model(model,
     :param learning_rate: Learning rate.
     :return: The compiled model.
     """
-    model.compile(
-        optimizer=AdamWarmup(
-            decay_steps=decay_steps,
-            warmup_steps=warmup_steps,
-            learning_rate=learning_rate,
-            weight_decay=weight_decay,
-            weight_decay_pattern=['embeddings', 'kernel', 'W1', 'W2', 'Wk', 'Wq', 'Wv', 'Wo'],
-        ),
-        loss=keras.losses.sparse_categorical_crossentropy,
-    )
+    model.compile(optimizer=AdamWarmup(decay_steps=decay_steps,
+                                       warmup_steps=warmup_steps,
+                                       learning_rate=learning_rate,
+                                       weight_decay=weight_decay,
+                                       weight_decay_pattern=['embeddings', 'kernel', 'W1', 'W2', 'Wk', 'Wq', 'Wv',
+                                                             'Wo'],
+                                       ),
+                  loss=keras.losses.sparse_categorical_crossentropy,
+                  )
 
 
 def get_custom_objects():

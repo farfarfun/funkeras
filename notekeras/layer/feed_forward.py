@@ -68,7 +68,8 @@ class FeedForward(keras.layers.Layer):
             'dropout_rate': self.dropout_rate,
         }
         base_config = super(FeedForward, self).get_config()
-        return dict(list(base_config.items()) + list(config.items()))
+        # return dict(list(base_config.items()) + list(config.items()))
+        return dict(base_config, **config)
 
     def compute_output_shape(self, input_shape):
         return input_shape
@@ -78,36 +79,32 @@ class FeedForward(keras.layers.Layer):
 
     def build(self, input_shape):
         feature_dim = int(input_shape[-1])
-        self.W1 = self.add_weight(
-            shape=(feature_dim, self.units),
-            initializer=self.kernel_initializer,
-            regularizer=self.kernel_regularizer,
-            constraint=self.kernel_constraint,
-            name='{}_W1'.format(self.name),
-        )
+        self.W1 = self.add_weight(shape=(feature_dim, self.units),
+                                  initializer=self.kernel_initializer,
+                                  regularizer=self.kernel_regularizer,
+                                  constraint=self.kernel_constraint,
+                                  name='{}_W1'.format(self.name),
+                                  )
         if self.use_bias:
-            self.b1 = self.add_weight(
-                shape=(self.units,),
-                initializer=self.bias_initializer,
-                regularizer=self.bias_regularizer,
-                constraint=self.bias_constraint,
-                name='{}_b1'.format(self.name),
-            )
-        self.W2 = self.add_weight(
-            shape=(self.units, feature_dim),
-            initializer=self.kernel_initializer,
-            regularizer=self.kernel_regularizer,
-            constraint=self.kernel_constraint,
-            name='{}_W2'.format(self.name),
-        )
+            self.b1 = self.add_weight(shape=(self.units,),
+                                      initializer=self.bias_initializer,
+                                      regularizer=self.bias_regularizer,
+                                      constraint=self.bias_constraint,
+                                      name='{}_b1'.format(self.name),
+                                      )
+        self.W2 = self.add_weight(shape=(self.units, feature_dim),
+                                  initializer=self.kernel_initializer,
+                                  regularizer=self.kernel_regularizer,
+                                  constraint=self.kernel_constraint,
+                                  name='{}_W2'.format(self.name),
+                                  )
         if self.use_bias:
-            self.b2 = self.add_weight(
-                shape=(feature_dim,),
-                initializer=self.bias_initializer,
-                regularizer=self.bias_regularizer,
-                constraint=self.bias_constraint,
-                name='{}_b2'.format(self.name),
-            )
+            self.b2 = self.add_weight(shape=(feature_dim,),
+                                      initializer=self.bias_initializer,
+                                      regularizer=self.bias_regularizer,
+                                      constraint=self.bias_constraint,
+                                      name='{}_b2'.format(self.name),
+                                      )
         super(FeedForward, self).build(input_shape)
 
     def call(self, x, mask=None, training=None):

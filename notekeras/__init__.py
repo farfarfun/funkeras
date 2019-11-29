@@ -6,6 +6,6 @@
 # @File    : __init__.py.py
 # @Software: PyCharm
 
-__all__ = ['attention', 'layer', 'transformer', 'backend']
+__all__ = ['activations', 'optimizers', 'layer', 'model', 'backend']
 
 __version__ = '0.80.0'

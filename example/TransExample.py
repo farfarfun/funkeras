@@ -1,9 +1,13 @@
 import numpy as np
+import pydot
+from keras.utils import plot_model
 
-# from keras_transformer import get_model
+from notekeras.backend import keras
+
+keras.utils.vis_utils.pydot = pydot
+
 from notekeras.layer.transformer import get_model
 
-# 构建一个toy词典
 tokens = 'all work and no play makes jack a dull boy'.split(' ')
 token_dict = {
     '<PAD>': 0,
@@ -53,5 +57,11 @@ model.summary()
 model.fit(
     x=[np.asarray(encoder_inputs * 1000), np.asarray(decoder_inputs * 1000)],
     y=np.asarray(decoder_outputs * 1000),
-    epochs=5,
+    epochs=1,
 )
+print(model.to_json())
+
+# plot_model(model, to_file='model_test.png', show_shapes=True, expand_nested=True)
+
+plot_model(model, to_file='model.png', show_shapes=True)
+plot_model(model.get_layer('Encoder-2-FeedForward'), to_file='model2.png', show_shapes=True)

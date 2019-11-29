@@ -11,8 +11,12 @@ TF_KERAS = strtobool(os.environ.get('TF_KERAS', '0'))
 
 if TF_KERAS:
     from tensorflow.python import keras
+
+    print("import keras from tensorflow")
 else:
     import keras
+
+    print("import keras from keras")
 
 utils = keras.utils
 activations = keras.activations

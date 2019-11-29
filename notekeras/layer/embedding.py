@@ -195,7 +195,9 @@ class EmbeddingSim(keras.layers.Layer):
 
 
 class EmbeddingRet(keras.layers.Embedding):
-    """Embedding layer with weights returned."""
+    """
+    Embedding layer with weights returned.
+    """
 
     def compute_output_shape(self, input_shape):
         return [
