@@ -8,6 +8,8 @@ from notekeras.layer.normalize import LayerNormalization
 __all__ = []
 
 
+# VGG-16, ZF-Net,Alex-Net,LeNet,Google-Net,ResNet, DenseNet-50
+
 def get_custom_objects():
     return {
         'LayerNormalization': LayerNormalization,

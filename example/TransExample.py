@@ -6,7 +6,7 @@ from notekeras.backend import keras
 
 keras.utils.vis_utils.pydot = pydot
 
-from notekeras.layer.transformer import get_model
+from notekeras.layer.transformer import TransformerModel
 
 tokens = 'all work and no play makes jack a dull boy'.split(' ')
 token_dict = {
@@ -35,7 +35,19 @@ for i in range(1, len(tokens) - 1):
     decoder_outputs.append(output_tokens)
 
 # 构建模型
-model = get_model(
+# model = get_model(
+#     token_num=len(token_dict),
+#     embed_dim=30,
+#     encoder_num=3,
+#     decoder_num=2,
+#     head_num=3,
+#     hidden_dim=120,
+#     attention_activation='relu',
+#     feed_forward_activation='relu',
+#     dropout_rate=0.05,
+#     embed_weights=np.random.random((13, 30)),
+# )
+model = TransformerModel(
     token_num=len(token_dict),
     embed_dim=30,
     encoder_num=3,
@@ -61,7 +73,15 @@ model.fit(
 )
 print(model.to_json())
 
-# plot_model(model, to_file='model_test.png', show_shapes=True, expand_nested=True)
-
 plot_model(model, to_file='model.png', show_shapes=True)
-# plot_model(model.get_layer('Encoder-2-FeedForward'), to_file='model2.png', show_shapes=True)
+
+decoded = model.decode(
+    encoder_inputs_no_padding,
+    start_token=token_dict['<START>'],
+    end_token=token_dict['<END>'],
+    pad_token=token_dict['<PAD>'],
+    max_len=100,
+)
+token_dict_rev = {v: k for k, v in token_dict.items()}
+for i in range(len(decoded)):
+    print(' '.join(map(lambda x: token_dict_rev[x], decoded[i][1:-1])))

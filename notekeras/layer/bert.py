@@ -8,8 +8,8 @@ from notekeras.layer.extract import Extract
 from notekeras.layer.inputs import get_inputs
 from notekeras.layer.masked import Masked
 from notekeras.layer.normalize import LayerNormalization
+from notekeras.layer.transformer import EncoderList
 from notekeras.layer.transformer import get_custom_objects as get_encoder_custom_objects
-from notekeras.layer.transformer import get_encoders_layers
 from notekeras.optimizers import AdamWarmup
 
 __all__ = [
@@ -17,7 +17,7 @@ __all__ = [
     'TOKEN_SEP', 'TOKEN_MASK', 'gelu',
     'get_model', 'compile_model', 'get_base_dict',
     'gen_batch_inputs', 'get_token_embedding',
-    'get_custom_objects', 'set_custom_objects'
+    'get_custom_objects', 'set_custom_objects', 'BertModel'
 ]
 
 TOKEN_PAD = ''  # Token for padding
@@ -25,6 +25,208 @@ TOKEN_UNK = '[UNK]'  # Token for unknown words
 TOKEN_CLS = '[CLS]'  # Token for classification
 TOKEN_SEP = '[SEP]'  # Token for separation
 TOKEN_MASK = '[MASK]'  # Token for masking
+
+
+class BertModel(keras.models.Model):
+    def __init__(self,
+                 token_num,
+                 pos_num=512,
+                 seq_len=512,
+                 embed_dim=768,
+                 transformer_num=12,
+                 head_num=12,
+                 feed_forward_dim=3072,
+                 dropout_rate=0.1,
+                 attention_activation=None,
+                 feed_forward_activation='gelu',
+                 training=True,
+                 trainable=None,
+                 output_layer_num=1,
+                 use_task_embed=False,
+                 task_num=10,
+                 use_adapter=False,
+                 adapter_units=None
+                 , **kwargs):
+        """Get BERT model.
+
+           See: https://arxiv.org/pdf/1810.04805.pdf
+
+           :param token_num: Number of tokens.
+           :param pos_num: Maximum position.
+           :param seq_len: Maximum length of the input sequence or None.
+           :param embed_dim: Dimensions of embeddings.
+           :param transformer_num: Number of transformers.
+           :param head_num: Number of heads in multi-head attention in each transformer.
+           :param feed_forward_dim: Dimension of the feed forward layer in each transformer.
+           :param dropout_rate: Dropout rate.
+           :param attention_activation: Activation for attention layers.
+           :param feed_forward_activation: Activation for feed-forward layers.
+           :param training: A built model with MLM and NSP outputs will be returned if it is `True`,
+                            otherwise the input layers and the last feature extraction layer will be returned.
+           :param trainable: Whether the model is trainable.
+           :param output_layer_num: The number of layers whose outputs will be concatenated as a single output.
+                                    Only available when `training` is `False`.
+           :param use_task_embed: Whether to add task embeddings to existed embeddings.
+           :param task_num: The number of tasks.
+           :param use_adapter: Whether to use feed-forward adapters before each residual connections.
+           :param adapter_units: The dimension of the first transformation in feed-forward adapter.
+           :return: The built model.
+        """
+
+        self.token_num = token_num
+        self.pos_num = pos_num
+        self.seq_len = seq_len
+        self.embed_dim = embed_dim
+        self.transformer_num = transformer_num
+
+        self.head_num = head_num
+        self.feed_forward_dim = feed_forward_dim
+        self.dropout_rate = dropout_rate
+        self.attention_activation = attention_activation
+
+        self.feed_forward_activation = feed_forward_activation
+        self.training = training
+        self.output_layer_num = output_layer_num
+        self.use_task_embed = use_task_embed
+
+        self.task_num = task_num
+
+        self.trainable = trainable
+        self.use_adapter = use_adapter
+        self.adapter_units = adapter_units
+
+        self.input_layer = self.output_layer = None
+        self._build()
+
+        super(BertModel, self).__init__(inputs=self.input_layer, outputs=self.output_layer, **kwargs)
+
+        for layer in self.layers:
+            layer.trainable = self._trainable(layer)
+
+    def _trainable(self, _layer):
+        if isinstance(self.trainable, (list, tuple, set)):
+            for prefix in self.trainable:
+                if _layer.name.startswith(prefix):
+                    return True
+            return False
+        return self.trainable
+
+    def _build(self):
+        if self.attention_activation == 'gelu':
+            self.attention_activation = gelu
+        if self.feed_forward_activation == 'gelu':
+            self.feed_forward_activation = gelu
+        if self.trainable is None:
+            self.trainable = self.training
+        if self.adapter_units is None:
+            self.adapter_units = max(1, self.embed_dim // 100)
+
+        inputs = get_inputs(seq_len=self.seq_len)
+        embed_layer, embed_weights = get_embedding(inputs,
+                                                   token_num=self.token_num,
+                                                   embed_dim=self.embed_dim,
+                                                   pos_num=self.pos_num,
+                                                   dropout_rate=self.dropout_rate,
+                                                   )
+        if self.use_task_embed:
+            task_input = keras.layers.Input(shape=(1,), name='Input-Task', )
+            embed_layer = TaskEmbedding(input_dim=self.task_num,
+                                        output_dim=self.embed_dim,
+                                        mask_zero=False,
+                                        name='Embedding-Task',
+                                        )([embed_layer, task_input])
+            inputs = inputs[:2] + [task_input, inputs[-1]]
+        if self.dropout_rate > 0.0:
+            dropout_layer = keras.layers.Dropout(rate=self.dropout_rate, name='Embedding-Dropout', )(embed_layer)
+        else:
+            dropout_layer = embed_layer
+        embed_layer = LayerNormalization(trainable=self.trainable, name='Embedding-Norm', )(dropout_layer)
+
+        transformed = EncoderList(encoder_num=self.transformer_num,
+                                  head_num=self.head_num,
+                                  hidden_dim=self.feed_forward_dim,
+                                  attention_activation=self.attention_activation,
+                                  feed_forward_activation=self.feed_forward_activation,
+                                  dropout_rate=self.dropout_rate,
+                                  use_adapter=self.use_adapter,
+                                  adapter_units=self.adapter_units,
+                                  adapter_activation=gelu,
+                                  )(embed_layer)
+        if self.training:
+            mlm_dense_layer = keras.layers.Dense(units=self.embed_dim,
+                                                 activation=self.feed_forward_activation,
+                                                 name='MLM-Dense',
+                                                 )(transformed)
+            mlm_norm_layer = LayerNormalization(name='MLM-Norm')(mlm_dense_layer)
+            mlm_pred_layer = EmbeddingSimilarity(name='MLM-Sim')([mlm_norm_layer, embed_weights])
+            masked_layer = Masked(name='MLM')([mlm_pred_layer, inputs[-1]])
+            extract_layer = Extract(index=0, name='Extract')(transformed)
+            nsp_dense_layer = keras.layers.Dense(units=self.embed_dim, activation='tanh', name='NSP-Dense', )(
+                extract_layer)
+            nsp_pred_layer = keras.layers.Dense(units=2, activation='softmax', name='NSP', )(nsp_dense_layer)
+            model = keras.models.Model(inputs=inputs, outputs=[masked_layer, nsp_pred_layer])
+
+            self.input_layer = inputs
+            self.output_layer = [masked_layer, nsp_pred_layer]
+
+            return model
+        else:
+            if self.use_task_embed:
+                inputs = inputs[:3]
+            else:
+                inputs = inputs[:2]
+
+            self.input_layer = inputs
+            self.output_layer = transformed
+
+        pass
+
+    def get_non_train(self):
+        if self.training:
+            return
+        for layer in self.layers:
+            layer.trainable = self._trainable(layer)
+
+        if isinstance(self.output_layer_num, int):
+            self.output_layer_num = min(self.output_layer_num, self.transformer_num)
+            self.output_layer_num = [-i for i in range(1, self.output_layer_num + 1)]
+        outputs = []
+        for layer_index in self.output_layer_num:
+            if layer_index < 0:
+                layer_index = self.transformer_num + layer_index
+            layer_index += 1
+            layer = self.get_layer(name='Encoder-{}-FeedForward-Norm'.format(layer_index))
+            outputs.append(layer.output)
+        if len(outputs) > 1:
+            transformed = keras.layers.Concatenate(name='Encoder-Output')(list(reversed(outputs)))
+        else:
+            transformed = outputs[0]
+        return self.inputs, transformed
+
+    def compile_model(self, weight_decay=0.01, decay_steps=100000, warmup_steps=10000, learning_rate=1e-4):
+        """Compile the model with warmup optimizer and sparse cross-entropy loss.
+
+        :param weight_decay: Weight decay rate.
+        :param decay_steps: Learning rate will decay linearly to zero in decay steps.
+        :param warmup_steps: Learning rate will increase linearly to learning_rate in first warmup steps.
+        :param learning_rate: Learning rate.
+        :return: The compiled model.
+        """
+        self.compile(
+            optimizer=AdamWarmup(decay_steps=decay_steps,
+                                 warmup_steps=warmup_steps,
+                                 learning_rate=learning_rate,
+                                 weight_decay=weight_decay,
+                                 weight_decay_pattern=['embeddings', 'kernel', 'W1', 'W2', 'Wk', 'Wq', 'Wv', 'Wo'],
+                                 ),
+            loss=keras.losses.sparse_categorical_crossentropy,
+        )
+
+    def get_token_embedding(self):
+        """Get token embedding from model.
+        :return: The output weights of embeddings.
+        """
+        return self.get_layer('Embedding-Token').output[1]
 
 
 def get_model(token_num,
@@ -106,17 +308,17 @@ def get_model(token_num,
     else:
         dropout_layer = embed_layer
     embed_layer = LayerNormalization(trainable=trainable, name='Embedding-Norm', )(dropout_layer)
-    transformed = get_encoders_layers(encoder_num=transformer_num,
-                                      input_layer=embed_layer,
-                                      head_num=head_num,
-                                      hidden_dim=feed_forward_dim,
-                                      attention_activation=attention_activation,
-                                      feed_forward_activation=feed_forward_activation,
-                                      dropout_rate=dropout_rate,
-                                      use_adapter=use_adapter,
-                                      adapter_units=adapter_units,
-                                      adapter_activation=gelu,
-                                      )
+
+    transformed = EncoderList(encoder_num=transformer_num,
+                              head_num=head_num,
+                              hidden_dim=feed_forward_dim,
+                              attention_activation=attention_activation,
+                              feed_forward_activation=feed_forward_activation,
+                              dropout_rate=dropout_rate,
+                              use_adapter=use_adapter,
+                              adapter_units=adapter_units,
+                              adapter_activation=gelu,
+                              )(embed_layer)
     if training:
         mlm_dense_layer = keras.layers.Dense(units=embed_dim,
                                              activation=feed_forward_activation,
