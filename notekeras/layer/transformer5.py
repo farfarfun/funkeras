@@ -9,7 +9,7 @@ from notekeras.layer.normalize import LayerNormalization
 
 Model = keras.models.Model
 
-__all__ = ['WrapCode', 'EncoderComponent', 'DecoderComponent', 'EncoderList', 'DecoderList']
+__all__ = ['WrapCodeComponent', 'EncoderComponent', 'DecoderComponent', 'EncoderListComponent', 'DecoderListComponent']
 
 
 def get_custom_objects():
@@ -23,7 +23,7 @@ def get_custom_objects():
     }
 
 
-class WrapCode(Model):
+class WrapCodeComponent(Model):
     def __init__(self,
                  name,
                  head_num,
@@ -39,7 +39,7 @@ class WrapCode(Model):
                  is_list=False,
                  use_attention=True
                  ):
-        super(WrapCode, self).__init__()
+        super(WrapCodeComponent, self).__init__()
         self.name = name
         self.head_num = head_num
         self.hidden_dim = hidden_dim
@@ -133,7 +133,7 @@ class WrapCode(Model):
         for layer in self.layers:
             config['layers'].append({
                 'class_name': layer.__class__.__name__,
-                'config': layer.get_config(),
+                'config': layer.get_config,
             })
         return config
 
@@ -170,33 +170,33 @@ class EncoderComponent(Model):
         self._build()
 
     def _build(self):
-        self.attention_layer2 = WrapCode(name='%s-MultiHeadSelfAttention' % self.name,
-                                         head_num=self.head_num,
-                                         hidden_dim=self.hidden_dim,
-                                         attention_activation=self.attention_activation,
-                                         feed_forward_activation=self.feed_forward_activation,
-                                         history_only=False,
-                                         dropout_rate=self.dropout_rate,
-                                         trainable=self.trainable,
-                                         use_adapter=self.use_adapter,
-                                         adapter_units=self.adapter_units,
-                                         adapter_activation=self.adapter_activation,
-                                         use_attention=True
-                                         )
+        self.attention_layer2 = WrapCodeComponent(name='%s-MultiHeadSelfAttention' % self.name,
+                                                  head_num=self.head_num,
+                                                  hidden_dim=self.hidden_dim,
+                                                  attention_activation=self.attention_activation,
+                                                  feed_forward_activation=self.feed_forward_activation,
+                                                  history_only=False,
+                                                  dropout_rate=self.dropout_rate,
+                                                  trainable=self.trainable,
+                                                  use_adapter=self.use_adapter,
+                                                  adapter_units=self.adapter_units,
+                                                  adapter_activation=self.adapter_activation,
+                                                  use_attention=True
+                                                  )
 
-        self.feed_forward_layer2 = WrapCode(name='%s-FeedForward' % self.name,
-                                            head_num=self.head_num,
-                                            hidden_dim=self.hidden_dim,
-                                            attention_activation=self.attention_activation,
-                                            feed_forward_activation=self.feed_forward_activation,
-                                            history_only=False,
-                                            dropout_rate=self.dropout_rate,
-                                            trainable=self.trainable,
-                                            use_adapter=self.use_adapter,
-                                            adapter_units=self.adapter_units,
-                                            adapter_activation=self.adapter_activation,
-                                            use_attention=False
-                                            )
+        self.feed_forward_layer2 = WrapCodeComponent(name='%s-FeedForward' % self.name,
+                                                     head_num=self.head_num,
+                                                     hidden_dim=self.hidden_dim,
+                                                     attention_activation=self.attention_activation,
+                                                     feed_forward_activation=self.feed_forward_activation,
+                                                     history_only=False,
+                                                     dropout_rate=self.dropout_rate,
+                                                     trainable=self.trainable,
+                                                     use_adapter=self.use_adapter,
+                                                     adapter_units=self.adapter_units,
+                                                     adapter_activation=self.adapter_activation,
+                                                     use_attention=False
+                                                     )
 
         self.layers.append(self.attention_layer2)
         self.layers.append(self.feed_forward_layer2)
@@ -221,7 +221,7 @@ class EncoderComponent(Model):
         for layer in self.layers:
             config['layers'].append({
                 'class_name': layer.__class__.__name__,
-                'config': layer.get_config(),
+                'config': layer.get_config,
             })
         return config
 
@@ -258,49 +258,49 @@ class DecoderComponent(Model):
         self._build()
 
     def _build(self):
-        self.self_attention_layer2 = WrapCode(name='%s-SelfAttention' % self.name,
-                                              head_num=self.head_num,
-                                              hidden_dim=self.hidden_dim,
-                                              attention_activation=self.attention_activation,
-                                              feed_forward_activation=self.feed_forward_activation,
-                                              history_only=True,
+        self.self_attention_layer2 = WrapCodeComponent(name='%s-SelfAttention' % self.name,
+                                                       head_num=self.head_num,
+                                                       hidden_dim=self.hidden_dim,
+                                                       attention_activation=self.attention_activation,
+                                                       feed_forward_activation=self.feed_forward_activation,
+                                                       history_only=True,
 
-                                              dropout_rate=self.dropout_rate,
-                                              trainable=self.trainable,
-                                              use_adapter=self.use_adapter,
-                                              adapter_units=self.adapter_units,
-                                              adapter_activation=self.adapter_activation,
-                                              use_attention=True,
-                                              )
+                                                       dropout_rate=self.dropout_rate,
+                                                       trainable=self.trainable,
+                                                       use_adapter=self.use_adapter,
+                                                       adapter_units=self.adapter_units,
+                                                       adapter_activation=self.adapter_activation,
+                                                       use_attention=True,
+                                                       )
 
-        self.query_attention_layer2 = WrapCode(name='%s-QueryAttention' % self.name,
-                                               head_num=self.head_num,
-                                               hidden_dim=self.hidden_dim,
-                                               attention_activation=self.attention_activation,
-                                               feed_forward_activation=self.feed_forward_activation,
-                                               history_only=False,
-                                               dropout_rate=self.dropout_rate,
-                                               trainable=self.trainable,
-                                               use_adapter=self.use_adapter,
-                                               adapter_units=self.adapter_units,
-                                               adapter_activation=self.adapter_activation,
-                                               is_list=True,
-                                               use_attention=True,
-                                               )
+        self.query_attention_layer2 = WrapCodeComponent(name='%s-QueryAttention' % self.name,
+                                                        head_num=self.head_num,
+                                                        hidden_dim=self.hidden_dim,
+                                                        attention_activation=self.attention_activation,
+                                                        feed_forward_activation=self.feed_forward_activation,
+                                                        history_only=False,
+                                                        dropout_rate=self.dropout_rate,
+                                                        trainable=self.trainable,
+                                                        use_adapter=self.use_adapter,
+                                                        adapter_units=self.adapter_units,
+                                                        adapter_activation=self.adapter_activation,
+                                                        is_list=True,
+                                                        use_attention=True,
+                                                        )
 
-        self.feed_forward_layer2 = WrapCode(name='%s-FeedForward' % self.name,
-                                            head_num=self.head_num,
-                                            hidden_dim=self.hidden_dim,
-                                            attention_activation=self.attention_activation,
-                                            feed_forward_activation=self.feed_forward_activation,
-                                            history_only=True,
-                                            dropout_rate=self.dropout_rate,
-                                            trainable=self.trainable,
-                                            use_adapter=self.use_adapter,
-                                            adapter_units=self.adapter_units,
-                                            adapter_activation=self.adapter_activation,
-                                            use_attention=False,
-                                            )
+        self.feed_forward_layer2 = WrapCodeComponent(name='%s-FeedForward' % self.name,
+                                                     head_num=self.head_num,
+                                                     hidden_dim=self.hidden_dim,
+                                                     attention_activation=self.attention_activation,
+                                                     feed_forward_activation=self.feed_forward_activation,
+                                                     history_only=True,
+                                                     dropout_rate=self.dropout_rate,
+                                                     trainable=self.trainable,
+                                                     use_adapter=self.use_adapter,
+                                                     adapter_units=self.adapter_units,
+                                                     adapter_activation=self.adapter_activation,
+                                                     use_attention=False,
+                                                     )
         self.layers.append(self.self_attention_layer2)
         self.layers.append(self.query_attention_layer2)
         self.layers.append(self.feed_forward_layer2)
@@ -327,12 +327,12 @@ class DecoderComponent(Model):
         for layer in self.layers:
             config['layers'].append({
                 'class_name': layer.__class__.__name__,
-                'config': layer.get_config(),
+                'config': layer.get_config,
             })
         return config
 
 
-class EncoderList(Model):
+class EncoderListComponent(Model):
     def __init__(self,
                  encoder_num,
                  head_num,
@@ -359,7 +359,7 @@ class EncoderList(Model):
            :param adapter_activation: The activation after the first transformation in feed-forward adapter.
            :return: Output layer.
            """
-        super(EncoderList, self).__init__()
+        super(EncoderListComponent, self).__init__()
         self.name = name
         self.encoder_num = encoder_num
         self.head_num = head_num
@@ -402,7 +402,7 @@ class EncoderList(Model):
         return input_shape
 
 
-class DecoderList(Model):
+class DecoderListComponent(Model):
     def __init__(self,
                  decoder_num,
                  head_num,
@@ -429,7 +429,7 @@ class DecoderList(Model):
             :param adapter_activation: The activation after the first transformation in feed-forward adapter.
             :return: Output layer.
             """
-        super(DecoderList, self).__init__()
+        super(DecoderListComponent, self).__init__()
         self.name = name
         self.decoder_num = decoder_num
         self.head_num = head_num
@@ -589,33 +589,33 @@ class TransformerModel(Model):
                                          name='Encoder-Embedding',
                                          )(encoder_embed_layer(encoder_input)[0])
 
-        encoded_layer = EncoderList(encoder_num=self.decoder_num,
-                                    head_num=self.head_num,
-                                    hidden_dim=self.hidden_dim,
-                                    attention_activation=self.attention_activation,
-                                    feed_forward_activation=self.feed_forward_activation,
-                                    dropout_rate=self.dropout_rate,
-                                    trainable=self.trainable,
-                                    use_adapter=self.use_adapter,
-                                    adapter_units=self.adapter_units,
-                                    adapter_activation=self.adapter_activation,
-                                    )(encoder_embed)
+        encoded_layer = EncoderListComponent(encoder_num=self.decoder_num,
+                                             head_num=self.head_num,
+                                             hidden_dim=self.hidden_dim,
+                                             attention_activation=self.attention_activation,
+                                             feed_forward_activation=self.feed_forward_activation,
+                                             dropout_rate=self.dropout_rate,
+                                             trainable=self.trainable,
+                                             use_adapter=self.use_adapter,
+                                             adapter_units=self.adapter_units,
+                                             adapter_activation=self.adapter_activation,
+                                             )(encoder_embed)
 
         decoder_input = keras.layers.Input(shape=(None,), name='Decoder-Input')
         decoder_embed, decoder_embed_weights = decoder_embed_layer(decoder_input)
         decoder_embed = TrigPosEmbedding(mode=TrigPosEmbedding.MODE_ADD, name='Decoder-Embedding', )(decoder_embed)
 
-        decoded_layer = DecoderList(decoder_num=self.encoder_num,
-                                    head_num=self.head_num,
-                                    hidden_dim=self.hidden_dim,
-                                    attention_activation=self.attention_activation,
-                                    feed_forward_activation=self.feed_forward_activation,
-                                    dropout_rate=self.dropout_rate,
-                                    trainable=self.trainable,
-                                    use_adapter=self.use_adapter,
-                                    adapter_units=self.adapter_units,
-                                    adapter_activation=self.adapter_activation,
-                                    )([decoder_embed, encoded_layer])
+        decoded_layer = DecoderListComponent(decoder_num=self.encoder_num,
+                                             head_num=self.head_num,
+                                             hidden_dim=self.hidden_dim,
+                                             attention_activation=self.attention_activation,
+                                             feed_forward_activation=self.feed_forward_activation,
+                                             dropout_rate=self.dropout_rate,
+                                             trainable=self.trainable,
+                                             use_adapter=self.use_adapter,
+                                             adapter_units=self.adapter_units,
+                                             adapter_activation=self.adapter_activation,
+                                             )([decoder_embed, encoded_layer])
 
         dense_layer = EmbeddingSim(trainable=self.trainable, name='Output', )([decoded_layer, decoder_embed_weights])
 

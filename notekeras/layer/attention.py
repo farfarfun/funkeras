@@ -478,7 +478,7 @@ class MultiHead(Wrapper):
         for layer in self.layers:
             config['layers'].append({
                 'class_name': layer.__class__.__name__,
-                'config': layer.get_config(),
+                'config': layer.get_config,
             })
         base_config = super(MultiHead, self).get_config()
         base_config.pop('layer')
@@ -511,7 +511,7 @@ class MultiHead(Wrapper):
             self.input_spec = keras.engine.InputSpec(shape=input_shape)
         if isinstance(self.layers, list) and len(self.layers) == 0:
             self.layer.build()
-            config = self.layer.get_config()
+            config = self.layer.get_config
             name = config['name']
             self.layers = []
             for i in range(self.layer_num):

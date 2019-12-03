@@ -104,7 +104,7 @@ class WrapLayer0(keras.models.Model):
         for layer in self.layers:
             config['layers'].append({
                 'class_name': layer.__class__.__name__,
-                'config': layer.get_config(),
+                'config': layer.get_config,
             })
 
         return config

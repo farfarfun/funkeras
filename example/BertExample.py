@@ -1,11 +1,9 @@
 import keras
 
+from notekeras.model.bert import get_model, BertModel, gen_batch_inputs
+from notekeras.tokenizer import get_base_dict
+
 # 随便的输入样例：
-from notekeras.layer import get_base_dict, gen_batch_inputs
-from notekeras.layer.bert import get_model, BertModel
-
-# from keras_bert import get_base_dict, get_model, compile_model, gen_batch_inputs
-
 sentence_pairs = [
     [['all', 'work', 'and', 'no', 'play'], ['makes', 'jack', 'a', 'dull', 'boy']],
     [['from', 'the', 'day', 'forth'], ['my', 'arm', 'changed']],
@@ -14,10 +12,12 @@ sentence_pairs = [
 
 # 构建自定义词典
 token_dict = get_base_dict()  # 初始化特殊符号，如`[CLS]`
+
 for pairs in sentence_pairs:
     for token in pairs[0] + pairs[1]:
         if token not in token_dict:
             token_dict[token] = len(token_dict)
+
 token_list = list(token_dict.keys())  # Used for selecting a random word
 
 model = BertModel(

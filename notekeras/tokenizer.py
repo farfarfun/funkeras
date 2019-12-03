@@ -8,7 +8,8 @@ TOKEN_MASK = '[MASK]'  # Token for masking
 TOKEN_START = '[START]'  # Token for start
 TOKEN_END = '[END]'  # Token for end
 
-__all__ = ['TOKEN_PAD', 'TOKEN_UNK', 'TOKEN_CLS', 'TOKEN_SEP', 'TOKEN_MASK', 'TOKEN_START', 'TOKEN_END']
+__all__ = ['get_base_dict', 'TOKEN_PAD', 'TOKEN_UNK', 'TOKEN_CLS', 'TOKEN_SEP', 'TOKEN_MASK', 'TOKEN_START',
+           'TOKEN_END']
 
 
 def get_base_dict(tokens=None):

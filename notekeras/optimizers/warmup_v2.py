@@ -167,7 +167,7 @@ class AdamWarmup(OptimizerV2):
         return control_flow_ops.group(*updates)
 
     def get_config(self):
-        config = super(AdamWarmup, self).get_config()
+        config = super(AdamWarmup, self).get_config
         config.update({
             'decay_steps': self._serialize_hyperparameter('decay_steps'),
             'warmup_steps': self._serialize_hyperparameter('warmup_steps'),
