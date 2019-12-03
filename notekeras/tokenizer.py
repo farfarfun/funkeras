@@ -1,6 +1,49 @@
 import unicodedata
 
-from notekeras.layer.bert import TOKEN_CLS, TOKEN_SEP, TOKEN_UNK
+TOKEN_PAD = '[PAD]'  # Token for padding
+TOKEN_UNK = '[UNK]'  # Token for unknown words
+TOKEN_CLS = '[CLS]'  # Token for classification
+TOKEN_SEP = '[SEP]'  # Token for separation
+TOKEN_MASK = '[MASK]'  # Token for masking
+TOKEN_START = '[START]'  # Token for start
+TOKEN_END = '[END]'  # Token for end
+
+__all__ = ['TOKEN_PAD', 'TOKEN_UNK', 'TOKEN_CLS', 'TOKEN_SEP', 'TOKEN_MASK', 'TOKEN_START', 'TOKEN_END']
+
+
+def get_base_dict(tokens=None):
+    """
+    Get basic dictionary containing special tokens.
+    """
+    token_dict = {}
+    if isinstance(tokens, dict):
+        token_dict.update(tokens)
+
+    for token in [TOKEN_PAD, TOKEN_UNK, TOKEN_CLS, TOKEN_SEP, TOKEN_MASK, TOKEN_START, TOKEN_END]:
+        if token not in token_dict:
+            token_dict[token] = len(token_dict)
+
+    if isinstance(tokens, list):
+        for token in tokens:
+            if token not in token_dict:
+                token_dict[token] = len(token_dict)
+
+    return token_dict
+
+
+class Tokenizer2(object):
+    def __init__(self,
+                 tokens=None,
+                 token_cls=TOKEN_CLS,
+                 token_sep=TOKEN_SEP,
+                 token_unk=TOKEN_UNK,
+                 pad_index=0, ):
+        self.token_dict = get_base_dict(tokens)
+        self._token_cls = token_cls
+        self._token_sep = token_sep
+        self._token_unk = token_unk
+        self._pad_index = pad_index
+        pass
 
 
 class Tokenizer(object):

@@ -9,9 +9,7 @@ from notekeras.layer.normalize import LayerNormalization
 
 Model = keras.models.Model
 
-__all__ = [
-    'WrapCode', 'EncoderComponent', 'DecoderComponent', 'EncoderList', 'DecoderList'
-]
+__all__ = ['WrapCode', 'EncoderComponent', 'DecoderComponent', 'EncoderList', 'DecoderList']
 
 
 def get_custom_objects():
