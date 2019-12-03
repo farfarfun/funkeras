@@ -647,6 +647,7 @@ class TransformerModel(Model):
         :param max_repeat_block: Maximum length of the repeating block.
         :return: Decoded tokens.
         """
+
         is_single = not isinstance(tokens[0], list)
         if is_single:
             tokens = [tokens]
