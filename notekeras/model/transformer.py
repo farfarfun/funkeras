@@ -1,7 +1,7 @@
 import numpy as np
 
 from notekeras.backend import keras
-from notekeras.component.transformer import EncoderListComponent, DecoderListComponent
+from notekeras.component.transformer import EncoderComponent, DecoderComponent
 from notekeras.layer.attention import MultiHeadAttention
 from notekeras.layer.embedding import EmbeddingRet, EmbeddingSim
 from notekeras.layer.embedding import TrigPosEmbedding
@@ -139,33 +139,33 @@ class TransformerModel(keras.models.Model):
                                          name='Encoder-Embedding',
                                          )(encoder_embed_layer(encoder_input)[0])
 
-        encoded_layer = EncoderListComponent(encoder_num=self.decoder_num,
-                                             head_num=self.head_num,
-                                             hidden_dim=self.hidden_dim,
-                                             attention_activation=self.attention_activation,
-                                             feed_forward_activation=self.feed_forward_activation,
-                                             dropout_rate=self.dropout_rate,
-                                             trainable=self.trainable,
-                                             use_adapter=self.use_adapter,
-                                             adapter_units=self.adapter_units,
-                                             adapter_activation=self.adapter_activation,
-                                             )(encoder_embed)
+        encoded_layer = EncoderComponent(encoder_num=self.decoder_num,
+                                         head_num=self.head_num,
+                                         hidden_dim=self.hidden_dim,
+                                         attention_activation=self.attention_activation,
+                                         feed_forward_activation=self.feed_forward_activation,
+                                         dropout_rate=self.dropout_rate,
+                                         trainable=self.trainable,
+                                         use_adapter=self.use_adapter,
+                                         adapter_units=self.adapter_units,
+                                         adapter_activation=self.adapter_activation,
+                                         )(encoder_embed)
 
         decoder_input = keras.layers.Input(shape=(None,), name='Decoder-Input')
         decoder_embed, decoder_embed_weights = decoder_embed_layer(decoder_input)
         decoder_embed = TrigPosEmbedding(mode=TrigPosEmbedding.MODE_ADD, name='Decoder-Embedding', )(decoder_embed)
 
-        decoded_layer = DecoderListComponent(decoder_num=self.encoder_num,
-                                             head_num=self.head_num,
-                                             hidden_dim=self.hidden_dim,
-                                             attention_activation=self.attention_activation,
-                                             feed_forward_activation=self.feed_forward_activation,
-                                             dropout_rate=self.dropout_rate,
-                                             trainable=self.trainable,
-                                             use_adapter=self.use_adapter,
-                                             adapter_units=self.adapter_units,
-                                             adapter_activation=self.adapter_activation,
-                                             )([decoder_embed, encoded_layer])
+        decoded_layer = DecoderComponent(decoder_num=self.encoder_num,
+                                         head_num=self.head_num,
+                                         hidden_dim=self.hidden_dim,
+                                         attention_activation=self.attention_activation,
+                                         feed_forward_activation=self.feed_forward_activation,
+                                         dropout_rate=self.dropout_rate,
+                                         trainable=self.trainable,
+                                         use_adapter=self.use_adapter,
+                                         adapter_units=self.adapter_units,
+                                         adapter_activation=self.adapter_activation,
+                                         )([decoder_embed, encoded_layer])
 
         dense_layer = EmbeddingSim(trainable=self.trainable, name='Output', )([decoded_layer, decoder_embed_weights])
 

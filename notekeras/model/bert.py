@@ -2,7 +2,7 @@ import numpy as np
 
 from notekeras.activations import gelu
 from notekeras.backend import keras
-from notekeras.component.transformer import EncoderListComponent
+from notekeras.component.transformer import EncoderComponent
 from notekeras.component.transformer import get_custom_objects as get_encoder_custom_objects
 from notekeras.layer.embedding import PositionEmbedding, get_embedding
 from notekeras.layer.embedding import TokenEmbedding, EmbeddingSimilarity, TaskEmbedding
@@ -142,16 +142,16 @@ class BertModel(keras.models.Model):
             dropout_layer = embed_layer
         embed_layer = LayerNormalization(trainable=self.trainable, name='Embedding-Norm', )(dropout_layer)
 
-        transformed = EncoderListComponent(encoder_num=self.transformer_num,
-                                           head_num=self.head_num,
-                                           hidden_dim=self.feed_forward_dim,
-                                           attention_activation=self.attention_activation,
-                                           feed_forward_activation=self.feed_forward_activation,
-                                           dropout_rate=self.dropout_rate,
-                                           use_adapter=self.use_adapter,
-                                           adapter_units=self.adapter_units,
-                                           adapter_activation=gelu,
-                                           )(embed_layer)
+        transformed = EncoderComponent(encoder_num=self.transformer_num,
+                                       head_num=self.head_num,
+                                       hidden_dim=self.feed_forward_dim,
+                                       attention_activation=self.attention_activation,
+                                       feed_forward_activation=self.feed_forward_activation,
+                                       dropout_rate=self.dropout_rate,
+                                       use_adapter=self.use_adapter,
+                                       adapter_units=self.adapter_units,
+                                       adapter_activation=gelu,
+                                       )(embed_layer)
         if self.training:
             mlm_dense_layer = keras.layers.Dense(units=self.embed_dim,
                                                  activation=self.feed_forward_activation,
@@ -309,16 +309,16 @@ def get_model(token_num,
         dropout_layer = embed_layer
     embed_layer = LayerNormalization(trainable=trainable, name='Embedding-Norm', )(dropout_layer)
 
-    transformed = EncoderListComponent(encoder_num=transformer_num,
-                                       head_num=head_num,
-                                       hidden_dim=feed_forward_dim,
-                                       attention_activation=attention_activation,
-                                       feed_forward_activation=feed_forward_activation,
-                                       dropout_rate=dropout_rate,
-                                       use_adapter=use_adapter,
-                                       adapter_units=adapter_units,
-                                       adapter_activation=gelu,
-                                       )(embed_layer)
+    transformed = EncoderComponent(encoder_num=transformer_num,
+                                   head_num=head_num,
+                                   hidden_dim=feed_forward_dim,
+                                   attention_activation=attention_activation,
+                                   feed_forward_activation=feed_forward_activation,
+                                   dropout_rate=dropout_rate,
+                                   use_adapter=use_adapter,
+                                   adapter_units=adapter_units,
+                                   adapter_activation=gelu,
+                                   )(embed_layer)
     if training:
         mlm_dense_layer = keras.layers.Dense(units=embed_dim,
                                              activation=feed_forward_activation,

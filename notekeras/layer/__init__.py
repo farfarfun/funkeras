@@ -1,5 +1,6 @@
 from .attention import *
 from .conv import MaskedConv1D
+from .core import MaskFlatten, SelfSum, SelfMean
 from .embedding import *
 from .extract import Extract
 from .feed_forward import FeedForward

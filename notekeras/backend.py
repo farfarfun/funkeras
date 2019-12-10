@@ -5,6 +5,7 @@ __all__ = [
     'keras', 'utils', 'activations', 'applications', 'backend', 'datasets', 'engine',
     'layers', 'preprocessing', 'wrappers', 'callbacks', 'constraints', 'initializers',
     'metrics', 'models', 'losses', 'optimizers', 'regularizers', 'TF_KERAS',
+    'Layer', 'Dense'
 ]
 
 TF_KERAS = strtobool(os.environ.get('TF_KERAS', '0'))
@@ -35,3 +36,5 @@ models = keras.models
 losses = keras.losses
 optimizers = keras.optimizers
 regularizers = keras.regularizers
+Layer = keras.layers.Layer
+Dense = keras.layers.Dense
