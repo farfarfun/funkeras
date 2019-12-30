@@ -1,11 +1,14 @@
 from notekeras.backend import backend as K
-from notekeras.backend import keras, initializers, regularizers, constraints
+from notekeras.backend import keras, layers, initializers, regularizers, constraints
+
+Layer = layers.Layer
+Embedding = layers.Embedding
 
 __all__ = ['EmbeddingRet', 'EmbeddingSim', 'PositionEmbedding', 'TrigPosEmbedding', 'get_custom_objects',
            'TokenEmbedding', 'EmbeddingSimilarity', 'get_embedding', 'get_embedding', 'TaskEmbedding']
 
 
-class TokenEmbedding(keras.layers.Embedding):
+class TokenEmbedding(Embedding):
     """Embedding layer with weights returned."""
 
     def compute_output_shape(self, input_shape):
@@ -67,7 +70,7 @@ def get_embedding(inputs, token_num, pos_num, embed_dim, dropout_rate=0.1, train
     return embed_layer, embed_weights
 
 
-class EmbeddingSimilarity(keras.layers.Layer):
+class EmbeddingSimilarity(Layer):
     """Calculate similarity between features and token embeddings with bias term."""
 
     def __init__(self,
@@ -121,7 +124,7 @@ class EmbeddingSimilarity(keras.layers.Layer):
         return keras.activations.softmax(outputs)
 
 
-class EmbeddingSim(keras.layers.Layer):
+class EmbeddingSim(Layer):
     """Calculate similarity between features and token embeddings with bias term."""
 
     def __init__(self,
@@ -194,7 +197,7 @@ class EmbeddingSim(keras.layers.Layer):
         return keras.activations.softmax(outputs)
 
 
-class EmbeddingRet(keras.layers.Embedding):
+class EmbeddingRet(Embedding):
     """
     Embedding layer with weights returned.
     """
@@ -218,7 +221,7 @@ class EmbeddingRet(keras.layers.Embedding):
         ]
 
 
-class PositionEmbedding(keras.layers.Layer):
+class PositionEmbedding(Layer):
     """Turn integers (positions) into dense vectors of fixed size.
     eg. [[-4], [10]] -> [[0.25, 0.1], [0.6, -0.2]]
 
@@ -350,7 +353,7 @@ class PositionEmbedding(keras.layers.Layer):
         return K.concatenate([inputs, pos_embeddings], axis=-1)
 
 
-class TrigPosEmbedding(keras.layers.Layer):
+class TrigPosEmbedding(Layer):
     """Position embedding use sine and cosine functions.
 
     See: https://arxiv.org/pdf/1706.03762
@@ -457,7 +460,7 @@ class TrigPosEmbedding(keras.layers.Layer):
         return output
 
 
-class TaskEmbedding(keras.layers.Layer):
+class TaskEmbedding(Layer):
     """Embedding for tasks.
 
         # Arguments

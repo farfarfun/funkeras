@@ -1,9 +1,11 @@
 from notekeras.backend import TF_KERAS
-from notekeras.backend import backend as K, layers
+from notekeras.backend import backend as K
 from notekeras.backend import keras
 
+Layer = keras.layers.Layer
 
-class ScaledDotProductAttention(keras.layers.Layer):
+
+class ScaledDotProductAttention(Layer):
     """
     注意力模型主要包含三个输入 即Q(queries), K(keys), V(values)。按照下面这个公式计算的
 
@@ -108,7 +110,7 @@ class ScaledDotProductAttention(keras.layers.Layer):
         return v
 
 
-class SeqSelfAttention(layers.Layer):
+class SeqSelfAttention(Layer):
     ATTENTION_TYPE_ADD = 'additive'
     ATTENTION_TYPE_MUL = 'multiplicative'
 
@@ -346,7 +348,7 @@ class SeqSelfAttention(layers.Layer):
         return {'SeqSelfAttention': SeqSelfAttention}
 
 
-class SeqWeightedAttention(layers.Layer):
+class SeqWeightedAttention(Layer):
     r"""Y = \text{softmax}(XW + b) X
 
     See: https://arxiv.org/pdf/1708.00524.pdf
@@ -411,7 +413,7 @@ class SeqWeightedAttention(layers.Layer):
         return {'SeqWeightedAttention': SeqWeightedAttention}
 
 
-class MultiHeadAttention(keras.layers.Layer):
+class MultiHeadAttention(Layer):
     """Multi-head attention layer.
 
     See: https://arxiv.org/pdf/1706.03762.pdf

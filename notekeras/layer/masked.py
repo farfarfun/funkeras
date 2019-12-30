@@ -1,8 +1,8 @@
 from notekeras.backend import backend as K
-from notekeras.backend import keras
+from notekeras.backend import layers
 
 
-class Masked(keras.layers.Layer):
+class Masked(layers.Layer):
     """Generate output mask based on the given mask.
 
     The inputs for the layer is the original input layer and the masked locations.

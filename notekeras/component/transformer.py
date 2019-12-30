@@ -1,9 +1,9 @@
-from notekeras.backend import keras
+from notekeras.backend import keras, layers
 from notekeras.layer.attention import MultiHeadAttention
 from notekeras.layer.feed_forward import FeedForward
 from notekeras.layer.normalize import LayerNormalization
 
-Layer = keras.layers.Layer
+Layer = layers.Layer
 
 __all__ = ['get_custom_objects',
            'WrapCodeLayer',

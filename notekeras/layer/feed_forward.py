@@ -1,8 +1,8 @@
 from notekeras.backend import backend as K
-from notekeras.backend import keras
+from notekeras.backend import keras, layers
 
 
-class FeedForward(keras.layers.Layer):
+class FeedForward(layers.Layer):
     """Position-wise feed-forward layer.
 
     # Arguments

@@ -2,7 +2,9 @@ import numpy as np
 import tensorflow as tf
 
 from notekeras.backend import backend as K
-from notekeras.backend import keras, Layer, layers, Dense
+from notekeras.backend import keras, layers, Dense
+
+Layer = keras.layers.Layer
 
 __all__ = ['MaskFlatten',
            'SelfMean', 'SelfSum',
@@ -159,7 +161,7 @@ class FactorizationMachine(Layer):
 FM = FactorizationMachine
 
 
-class CrossLayer(layers.Layer):
+class CrossLayer(Layer):
     """
     https://keras.io/layers/writing-your-own-keras-layers/
     """
@@ -204,7 +206,7 @@ class CrossLayer(layers.Layer):
         return input_shape
 
 
-class AutoEncoder(layers.Layer):
+class AutoEncoder(Layer):
     """
     https://keras.io/layers/writing-your-own-keras-layers/
     """

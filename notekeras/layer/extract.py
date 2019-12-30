@@ -1,9 +1,9 @@
-from notekeras.backend import keras
+from notekeras.backend import layers
 
 __all__ = ['Extract']
 
 
-class Extract(keras.layers.Layer):
+class Extract(layers.Layer):
     """Extract from index.
 
     See: https://arxiv.org/pdf/1810.04805.pdf

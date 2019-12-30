@@ -1,6 +1,9 @@
 from notekeras.backend import backend as K
-from notekeras.backend import keras, Dense, Layer
+from notekeras.backend import keras, layers
 from notekeras.layer import SelfSum, MaskFlatten
+
+Layer = layers.Layer
+Dense = layers.Dense
 
 
 class WideDeepComponent(Layer):
@@ -53,7 +56,7 @@ class WideDeepComponent(Layer):
         return config
 
 
-class DeepFM(keras.layers.Layer):
+class DeepFM(Layer):
     """
     主要参考 https://blog.csdn.net/songbinxu/article/details/80151814
     """

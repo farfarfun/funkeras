@@ -1,8 +1,8 @@
 from notekeras.backend import backend as K
-from notekeras.backend import keras
+from notekeras.backend import layers
 
 
-class MaskedGlobalMaxPool1D(keras.layers.Layer):
+class MaskedGlobalMaxPool1D(layers.Layer):
 
     def __init__(self, **kwargs):
         super(MaskedGlobalMaxPool1D, self).__init__(**kwargs)

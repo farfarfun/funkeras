@@ -1,9 +1,8 @@
 from notekeras.backend import backend as K
-from notekeras.backend import keras
+from notekeras.backend import keras, layers
 
 
-class LayerNormalization(keras.layers.Layer):
-
+class LayerNormalization(layers.Layer):
     def __init__(self,
                  center=True,
                  scale=True,
