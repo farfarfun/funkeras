@@ -40,7 +40,8 @@ class TransformerModel(keras.models.Model):
                  trainable=True,
                  use_adapter=False,
                  adapter_units=None,
-                 adapter_activation='relu'
+                 adapter_activation='relu',
+                 encode_as_layer=False
                  , **kwargs):
         """Get full model without compilation.
 
@@ -85,6 +86,7 @@ class TransformerModel(keras.models.Model):
         self.adapter_activation = adapter_activation
 
         self.input_layer = self.output_layer = None
+        self.encode_as_layer = encode_as_layer
         self._build()
 
         super(TransformerModel, self).__init__(inputs=self.input_layer, outputs=self.output_layer, **kwargs)
@@ -149,6 +151,7 @@ class TransformerModel(keras.models.Model):
                                          use_adapter=self.use_adapter,
                                          adapter_units=self.adapter_units,
                                          adapter_activation=self.adapter_activation,
+                                         as_layer=self.encode_as_layer
                                          )(encoder_embed)
 
         decoder_input = keras.layers.Input(shape=(None,), name='Decoder-Input')
@@ -165,6 +168,7 @@ class TransformerModel(keras.models.Model):
                                          use_adapter=self.use_adapter,
                                          adapter_units=self.adapter_units,
                                          adapter_activation=self.adapter_activation,
+                                         as_layer=self.encode_as_layer
                                          )([decoder_embed, encoded_layer])
 
         dense_layer = EmbeddingSim(trainable=self.trainable, name='Output', )([decoded_layer, decoder_embed_weights])

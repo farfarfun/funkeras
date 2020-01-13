@@ -43,30 +43,26 @@ def get_embedding(inputs, token_num, pos_num, embed_dim, dropout_rate=0.1, train
     :param trainable: Whether the layers are trainable.
     :return: The merged embedding layer and weights of token embedding.
     """
-    embeddings = [
-        TokenEmbedding(
-            input_dim=token_num,
-            output_dim=embed_dim,
-            mask_zero=True,
-            trainable=trainable,
-            name='Embedding-Token',
-        )(inputs[0]),
-        keras.layers.Embedding(
-            input_dim=2,
-            output_dim=embed_dim,
-            trainable=trainable,
-            name='Embedding-Segment',
-        )(inputs[1]),
-    ]
+    embeddings = [TokenEmbedding(input_dim=token_num,
+                                 output_dim=embed_dim,
+                                 mask_zero=True,
+                                 trainable=trainable,
+                                 name='Embedding-Token',
+                                 )(inputs[0]),
+                  layers.Embedding(input_dim=2,
+                                   output_dim=embed_dim,
+                                   trainable=trainable,
+                                   name='Embedding-Segment',
+                                   )(inputs[1]),
+                  ]
     embeddings[0], embed_weights = embeddings[0]
     embed_layer = keras.layers.Add(name='Embedding-Token-Segment')(embeddings)
-    embed_layer = PositionEmbedding(
-        input_dim=pos_num,
-        output_dim=embed_dim,
-        mode=PositionEmbedding.MODE_ADD,
-        trainable=trainable,
-        name='Embedding-Position',
-    )(embed_layer)
+    embed_layer = PositionEmbedding(input_dim=pos_num,
+                                    output_dim=embed_dim,
+                                    mode=PositionEmbedding.MODE_ADD,
+                                    trainable=trainable,
+                                    name='Embedding-Position',
+                                    )(embed_layer)
     return embed_layer, embed_weights
 
 

@@ -40,6 +40,7 @@ model = TransformerModel(
     feed_forward_activation='relu',
     dropout_rate=0.05,
     embed_weights=np.random.random((len(token_dict), 30)),
+    encode_as_layer=False
 )
 model.compile(
     optimizer='adam',

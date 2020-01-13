@@ -10,7 +10,7 @@ import numpy as np
 import tensorflow as tf
 
 from notekeras.backend import keras
-from notekeras.layer import bert
+from notekeras.model import bert
 
 __all__ = [
     'build_model_from_config',
