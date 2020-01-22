@@ -1,5 +1,4 @@
-import keras
-
+from notekeras.backend import keras
 from notekeras.model.bert import get_model, BertModel, gen_batch_inputs
 from notekeras.tokenizer import get_base_dict
 

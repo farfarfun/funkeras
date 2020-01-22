@@ -1,3 +1,5 @@
+import tensorflow as tf
+
 from notekeras.backend import backend as K
 from notekeras.backend import layers
 
@@ -42,7 +44,7 @@ class Masked(layers.Layer):
         return masked
 
     def call(self, inputs, mask=None, **kwargs):
-        output = K.identity(inputs[0])
+        output = tf.identity(inputs[0])
         if self.return_masked:
             return [output, K.cast(self.compute_mask(inputs, mask)[0], K.floatx())]
         return output

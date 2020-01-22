@@ -31,8 +31,7 @@ class WrapLayer0(keras.models.Model):
                  adapter_activation='relu',
                  is_list=False,
                  ):
-        super(WrapLayer0, self).__init__()
-        self.name = name
+        super(WrapLayer0, self).__init__(name=name)
         self.dropout_rate = dropout_rate
         self.trainable = trainable
         self.use_adapter = use_adapter

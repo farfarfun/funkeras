@@ -12,12 +12,11 @@ class WideDeepComponent(Layer):
                  deep_shape=None,
                  deep_activation='relu'
                  ):
-        super(WideDeepComponent, self).__init__()
+        super(WideDeepComponent, self).__init__(name=name)
 
         if deep_shape is None:
             deep_shape = [64, 64, 32]
 
-        self.name = name
         self.deep_shape = deep_shape
         self.deep_activation = deep_activation
 
@@ -66,12 +65,11 @@ class DeepFM(Layer):
                  deep_shape=None,
                  deep_activation='relu'
                  ):
-        super(DeepFM, self).__init__()
+        super(DeepFM, self).__init__(name=name)
 
         if deep_shape is None:
             deep_shape = [128, 64, 32, 1]
 
-        self.name = name
         self.deep_shape = deep_shape
         self.deep_activation = deep_activation
 

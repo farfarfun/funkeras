@@ -39,8 +39,7 @@ class WrapCodeComponent(Model):
                  is_list=False,
                  use_attention=True
                  ):
-        super(WrapCodeComponent, self).__init__()
-        self.name = name
+        super(WrapCodeComponent, self).__init__(name=name)
         self.head_num = head_num
         self.hidden_dim = hidden_dim
         self.attention_activation = attention_activation
@@ -151,8 +150,7 @@ class EncoderComponent(Model):
                  adapter_units=None,
                  adapter_activation='relu',
                  ):
-        super(EncoderComponent, self).__init__()
-        self.name = name
+        super(EncoderComponent, self).__init__(name=name)
         self.head_num = head_num
         self.hidden_dim = hidden_dim
         self.attention_activation = attention_activation
@@ -239,8 +237,7 @@ class DecoderComponent(Model):
                  adapter_units=None,
                  adapter_activation='relu',
                  ):
-        super(DecoderComponent, self).__init__()
-        self.name = name
+        super(DecoderComponent, self).__init__(name=name)
         self.head_num = head_num
         self.hidden_dim = hidden_dim
         self.attention_activation = attention_activation
@@ -359,8 +356,7 @@ class EncoderListComponent(Model):
            :param adapter_activation: The activation after the first transformation in feed-forward adapter.
            :return: Output layer.
            """
-        super(EncoderListComponent, self).__init__()
-        self.name = name
+        super(EncoderListComponent, self).__init__(name=name)
         self.encoder_num = encoder_num
         self.head_num = head_num
         self.hidden_dim = hidden_dim
@@ -429,8 +425,7 @@ class DecoderListComponent(Model):
             :param adapter_activation: The activation after the first transformation in feed-forward adapter.
             :return: Output layer.
             """
-        super(DecoderListComponent, self).__init__()
-        self.name = name
+        super(DecoderListComponent, self).__init__(name=name)
         self.decoder_num = decoder_num
         self.head_num = head_num
         self.hidden_dim = hidden_dim
@@ -521,7 +516,7 @@ class TransformerModel(Model):
         self.decoder_num = decoder_num
         self.head_num = head_num
         self.hidden_dim = hidden_dim
-        self.name = name
+
         self.attention_activation = attention_activation
         self.feed_forward_activation = feed_forward_activation
         self.dropout_rate = dropout_rate
@@ -537,7 +532,7 @@ class TransformerModel(Model):
         self.input_layer = self.output_layer = None
         self._build()
 
-        super(TransformerModel, self).__init__(inputs=self.input_layer, outputs=self.output_layer, **kwargs)
+        super(TransformerModel, self).__init__(name=name, inputs=self.input_layer, outputs=self.output_layer, **kwargs)
 
     def _build(self):
         if not isinstance(self.token_num, list):

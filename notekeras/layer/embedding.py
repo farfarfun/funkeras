@@ -1,3 +1,5 @@
+import tensorflow as tf
+
 from notekeras.backend import backend as K
 from notekeras.backend import keras, layers, initializers, regularizers, constraints
 
@@ -18,7 +20,7 @@ class TokenEmbedding(Embedding):
         return [super(TokenEmbedding, self).compute_mask(inputs, mask), None]
 
     def call(self, inputs):
-        return [super(TokenEmbedding, self).call(inputs), K.identity(self.embeddings)]
+        return [super(TokenEmbedding, self).call(inputs), tf.identity(self.embeddings)]
 
 
 def get_custom_objects():
@@ -213,7 +215,7 @@ class EmbeddingRet(Embedding):
     def call(self, inputs):
         return [
             super(EmbeddingRet, self).call(inputs),
-            K.identity(self.embeddings),
+            tf.identity(self.embeddings),
         ]
 
 

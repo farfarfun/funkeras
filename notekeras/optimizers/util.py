@@ -1,5 +1,3 @@
-from notekeras.backend import TF_KERAS
-
 __all__ = ['calc_train_steps']
 
 
@@ -19,9 +17,3 @@ def calc_train_steps(num_example, batch_size, epochs, warmup_proportion=0.1):
     total = steps * epochs
     warmup = int(total * warmup_proportion)
     return total, warmup
-
-
-if TF_KERAS:
-    pass
-else:
-    pass

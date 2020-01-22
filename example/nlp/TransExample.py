@@ -1,12 +1,8 @@
 import numpy as np
-import pydot
-from keras.utils import plot_model
 
-from notekeras.backend import keras
+from notekeras.backend import plot_model
 from notekeras.model import TransformerModel
 from notekeras.tokenizer import get_base_dict, TOKEN_PAD, TOKEN_END, TOKEN_START
-
-keras.utils.vis_utils.pydot = pydot
 
 tokens = 'all work and no play makes jack a dull boy'.split(' ')
 token_dict = get_base_dict(tokens)
@@ -39,6 +35,7 @@ model = TransformerModel(
     attention_activation='relu',
     feed_forward_activation='relu',
     dropout_rate=0.05,
+    name='trans',
     embed_weights=np.random.random((len(token_dict), 30)),
     encode_as_layer=False
 )

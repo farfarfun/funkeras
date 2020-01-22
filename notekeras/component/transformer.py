@@ -1,9 +1,11 @@
-from notekeras.backend import keras, layers
+import tensorflow as tf
+
+from notekeras.backend import keras
 from notekeras.layer.attention import MultiHeadAttention
 from notekeras.layer.feed_forward import FeedForward
 from notekeras.layer.normalize import LayerNormalization
 
-Layer = layers.Layer
+Layer = tf.keras.layers.Layer
 
 __all__ = ['get_custom_objects',
            'WrapCodeLayer',
@@ -38,8 +40,7 @@ class WrapCodeLayer(Layer):
                  use_attention=True,
                  as_layer=False
                  ):
-        super(WrapCodeLayer, self).__init__()
-        self.name = name
+        super(WrapCodeLayer, self).__init__(name=name)
         self.head_num = head_num
         self.hidden_dim = hidden_dim
         self.attention_activation = attention_activation
@@ -138,8 +139,8 @@ class EncoderLayer(Layer):
                  adapter_activation='relu',
                  as_layer=True
                  ):
-        super(EncoderLayer, self).__init__()
-        self.name = name
+        super(EncoderLayer, self).__init__(name=name)
+
         self.head_num = head_num
         self.hidden_dim = hidden_dim
         self.attention_activation = attention_activation
@@ -227,8 +228,7 @@ class DecoderLayer(Layer):
                  adapter_activation='relu',
                  as_layer=True
                  ):
-        super(DecoderLayer, self).__init__()
-        self.name = name
+        super(DecoderLayer, self).__init__(name=name)
         self.head_num = head_num
         self.hidden_dim = hidden_dim
         self.attention_activation = attention_activation
@@ -350,8 +350,7 @@ class EncoderComponent(Layer):
            :param adapter_activation: The activation after the first transformation in feed-forward adapter.
            :return: Output layer.
            """
-        super(EncoderComponent, self).__init__()
-        self.name = name
+        super(EncoderComponent, self).__init__(name=name)
         self.encoder_num = encoder_num
         self.head_num = head_num
         self.hidden_dim = hidden_dim
@@ -424,8 +423,7 @@ class DecoderComponent(Layer):
             :param adapter_activation: The activation after the first transformation in feed-forward adapter.
             :return: Output layer.
             """
-        super(DecoderComponent, self).__init__()
-        self.name = name
+        super(DecoderComponent, self).__init__(name=name)
         self.decoder_num = decoder_num
         self.head_num = head_num
         self.hidden_dim = hidden_dim

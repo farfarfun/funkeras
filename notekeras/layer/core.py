@@ -104,8 +104,7 @@ class FactorizationMachine(Layer):
                  use_weight=True,
                  use_bias=True,
                  **kwargs):
-        super(FactorizationMachine, self).__init__(**kwargs)
-        self.name = name
+        super(FactorizationMachine, self).__init__(name=name, **kwargs)
         self.output_dim = output_dim
         self.activate = activation
         self.user_weight = use_weight
@@ -170,9 +169,7 @@ class CrossLayer(Layer):
                  num_layer,
                  name='Cross',
                  **kwargs):
-        super(CrossLayer, self).__init__(**kwargs)
-        self.name = name
-
+        super(CrossLayer, self).__init__(name=name, **kwargs)
         self.num_layer = num_layer
         self.input_dim = self.W = self.bias = None
 
@@ -218,10 +215,9 @@ class AutoEncoder(Layer):
                  hidden_activation='relu',
                  output_activation='tanh',
                  **kwargs):
-        super(AutoEncoder, self).__init__(**kwargs)
+        super(AutoEncoder, self).__init__(name=name, **kwargs)
         if hidden_layer is None:
             hidden_layer = [128, 64, 32]
-        self.name = name
 
         self.is_layer = is_layer
         self.hidden_layer = hidden_layer

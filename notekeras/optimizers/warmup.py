@@ -33,12 +33,21 @@ class AdamWarmup(keras.optimizers.Optimizer):
             Beyond".
     """
 
-    def __init__(self, decay_steps, warmup_steps, min_lr=0.0,
-                 learning_rate=0.001, beta_1=0.9, beta_2=0.999,
-                 epsilon=None, weight_decay=0., weight_decay_pattern=None,
-                 amsgrad=False, **kwargs):
+    def __init__(self,
+                 decay_steps,
+                 warmup_steps,
+                 min_lr=0.0,
+                 learning_rate=0.001,
+                 beta_1=0.9,
+                 beta_2=0.999,
+                 epsilon=None,
+                 weight_decay=0.,
+                 weight_decay_pattern=None,
+                 amsgrad=False,
+                 name="",
+                 **kwargs):
         learning_rate = kwargs.pop('lr', learning_rate)
-        super(AdamWarmup, self).__init__(**kwargs)
+        super(AdamWarmup, self).__init__(name=name, **kwargs)
         with K.name_scope(self.__class__.__name__):
             self.decay_steps = K.variable(decay_steps, name='decay_steps')
             self.warmup_steps = K.variable(warmup_steps, name='warmup_steps')

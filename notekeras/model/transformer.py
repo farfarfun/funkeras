@@ -72,7 +72,7 @@ class TransformerModel(keras.models.Model):
         self.decoder_num = decoder_num
         self.head_num = head_num
         self.hidden_dim = hidden_dim
-        self.name = name
+
         self.attention_activation = attention_activation
         self.feed_forward_activation = feed_forward_activation
         self.dropout_rate = dropout_rate
@@ -89,7 +89,10 @@ class TransformerModel(keras.models.Model):
         self.encode_as_layer = encode_as_layer
         self._build()
 
-        super(TransformerModel, self).__init__(inputs=self.input_layer, outputs=self.output_layer, **kwargs)
+        super(TransformerModel, self).__init__(inputs=self.input_layer,
+                                               outputs=self.output_layer,
+                                               name=name,
+                                               **kwargs)
 
     def _build(self):
         if not isinstance(self.token_num, list):

@@ -101,7 +101,8 @@ class BertModel(keras.models.Model):
         super(BertModel, self).__init__(inputs=self.input_layer, outputs=self.output_layer, **kwargs)
 
         for layer in self.layers:
-            layer.trainable = self._trainable(layer)
+            if type(type) == keras.layers.Layer:
+                layer.trainable = self._trainable(layer)
 
     def _trainable(self, _layer):
         if isinstance(self.trainable, (list, tuple, set)):

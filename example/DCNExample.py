@@ -1,15 +1,14 @@
 import numpy as np
-from keras.layers import Dense, Input, Dropout
-from keras.models import Model
 
+from notekeras.backend import layers, Model
 from notekeras.layer.core import CrossLayer, FM
 
 
 def model_base(x_train, x_test, y_train, y_test, train=False):
-    inp = Input(shape=[x_train.shape[1]])
-    x = Dense(50, activation='relu')(inp)
-    x = Dropout(0.2)(x)
-    x = Dense(1, activation='sigmoid')(x)
+    inp = layers.Input(shape=[x_train.shape[1]])
+    x = layers.Dense(50, activation='relu')(inp)
+    x = layers.Dropout(0.2)(x)
+    x = layers.Dense(1, activation='sigmoid')(x)
 
     model = Model(inputs=inp, outputs=x)
 
@@ -28,11 +27,11 @@ def model_base(x_train, x_test, y_train, y_test, train=False):
 
 
 def model_fm(x_train, x_test, y_train, y_test, train=False):
-    inp = Input(shape=[x_train.shape[1]])
+    inp = layers.Input(shape=[x_train.shape[1]])
     x = inp
     x = FM()(x)
-    x = Dropout(0.2)(x)
-    x = Dense(1, activation='sigmoid')(x)
+    x = layers.Dropout(0.2)(x)
+    x = layers.Dense(1, activation='sigmoid')(x)
 
     model = Model(inputs=inp, outputs=x)
 
@@ -51,11 +50,11 @@ def model_fm(x_train, x_test, y_train, y_test, train=False):
 
 
 def model_dcn(x_train, x_test, y_train, y_test, train=False):
-    inp = Input(shape=[x_train.shape[1]])
+    inp = layers.Input(shape=[x_train.shape[1]])
     x = inp
     x = CrossLayer(num_layer=3)(x)
-    x = Dropout(0.2)(x)
-    x = Dense(1, activation='sigmoid')(x)
+    x = layers.Dropout(0.2)(x)
+    x = layers.Dense(1, activation='sigmoid')(x)
 
     model = Model(inputs=inp, outputs=x)
 

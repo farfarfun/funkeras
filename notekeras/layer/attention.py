@@ -1,4 +1,3 @@
-from notekeras.backend import TF_KERAS
 from notekeras.backend import backend as K
 from notekeras.backend import keras
 
@@ -614,11 +613,12 @@ class MultiHeadAttention(Layer):
             y += self.bo
         if self.activation is not None:
             y = self.activation(y)
-        if TF_KERAS:
-            # Add shape information to tensor when using `tf.keras`
-            input_shape = [K.int_shape(q), K.int_shape(k), K.int_shape(v)]
-            output_shape = self.compute_output_shape(input_shape)
-            if output_shape[1] is not None:
-                output_shape = (-1,) + output_shape[1:]
-                y = K.reshape(y, output_shape)
+
+        # Add shape information to tensor when using `tf.keras`
+        input_shape = [K.int_shape(q), K.int_shape(k), K.int_shape(v)]
+        output_shape = self.compute_output_shape(input_shape)
+        if output_shape[1] is not None:
+            output_shape = (-1,) + output_shape[1:]
+            y = K.reshape(y, output_shape)
+
         return y

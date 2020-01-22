@@ -1,31 +1,24 @@
 import os
-from distutils.util import strtobool
+
+import tensorflow as tf
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 __all__ = [
-    'keras', 'utils', 'activations', 'applications', 'backend', 'datasets', 'engine',
+    'keras', 'utils', 'activations', 'applications', 'backend', 'datasets',
     'layers', 'preprocessing', 'wrappers', 'callbacks', 'constraints', 'initializers',
-    'metrics', 'models', 'losses', 'optimizers', 'regularizers', 'TF_KERAS',
-    'Layer', 'Dense'
+    'metrics', 'models', 'losses', 'optimizers', 'regularizers',
+    'Dense', 'plot_model',
+    'Layer', 'Model',
 ]
-
-TF_KERAS = strtobool(os.environ.get('TF_KERAS', '0'))
-
-if TF_KERAS:
-    from tensorflow.python import keras
-
-    print("import keras from tensorflow")
-else:
-    import keras
-
-    print("import keras from keras")
+keras = tf.keras
 
 utils = keras.utils
 activations = keras.activations
 applications = keras.applications
 backend = keras.backend
 datasets = keras.datasets
-engine = keras.engine
-layers = keras.layers
+
 preprocessing = keras.preprocessing
 wrappers = keras.wrappers
 callbacks = keras.callbacks
@@ -36,5 +29,9 @@ models = keras.models
 losses = keras.losses
 optimizers = keras.optimizers
 regularizers = keras.regularizers
-Layer = keras.layers.Layer
-Dense = keras.layers.Dense
+plot_model = keras.utils.plot_model
+
+layers = keras.layers
+Layer = layers.Layer
+Dense = layers.Dense
+Model = keras.models.Model
