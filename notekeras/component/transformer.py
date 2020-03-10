@@ -337,9 +337,11 @@ class WrapCodeModel(keras.models.Model):
                  adapter_activation='relu',
                  is_list=False,
                  use_attention=True,
+                 input_shape=None,
                  **kwargs
                  ):
         super(WrapCodeModel, self).__init__(name=name, **kwargs)
+        self.input_sh = input_shape
         self.head_num = head_num
         self.hidden_dim = hidden_dim
         self.attention_activation = attention_activation
@@ -362,14 +364,14 @@ class WrapCodeModel(keras.models.Model):
         self._network_nodes = []
         self.input_layer = self.output_layer = None
 
-        self._build()
+        self._build(input_shape)
 
         super(WrapCodeModel, self).__init__(inputs=self.input_layer,
                                             outputs=self.output_layer,
                                             name=name,
                                             **kwargs)
 
-    def _build(self):
+    def _build(self, input_shape):
         if self.use_attention:
             self.attention_layer = MultiHeadAttention(name='%s_Attention' % self.name,
                                                       head_num=self.head_num,
@@ -402,12 +404,12 @@ class WrapCodeModel(keras.models.Model):
 
         # def call(self, input_layer, **kwargs):
         if self.is_list:
-            input_layer = [keras.layers.Input(shape=(None, 30), name='{}_Encoder-Input-key'.format(self.name)),
-                           keras.layers.Input(shape=(None, 30), name='{}_Encoder-Input-query'.format(self.name)),
-                           keras.layers.Input(shape=(None, 30), name='{}_Encoder-Input-value'.format(self.name))
+            input_layer = [keras.layers.Input(shape=input_shape, name='{}_Encoder-Input-key'.format(self.name)),
+                           keras.layers.Input(shape=input_shape, name='{}_Encoder-Input-query'.format(self.name)),
+                           keras.layers.Input(shape=input_shape, name='{}_Encoder-Input-value'.format(self.name))
                            ]
         else:
-            input_layer = keras.layers.Input(shape=(None, 30), name='{}_Encoder-Input'.format(self.name))
+            input_layer = keras.layers.Input(shape=input_shape, name='{}_Encoder-Input'.format(self.name))
         build_output = self.attention_layer(input_layer)
 
         if self.dropout_rate > 0.0:
@@ -446,6 +448,7 @@ class EncoderModel(keras.models.Model):
                  use_adapter=False,
                  adapter_units=None,
                  adapter_activation='relu',
+                 input_shape=None
                  ):
         super(EncoderModel, self).__init__(name=name)
 
@@ -465,14 +468,14 @@ class EncoderModel(keras.models.Model):
 
         self.input_layer = self.output_layer = None
 
-        self._build()
+        self._build(input_shape)
 
         super(EncoderModel, self).__init__(inputs=self.input_layer,
                                            outputs=self.output_layer,
                                            name=name,
                                            trainable=trainable)
 
-    def _build(self):
+    def _build(self, input_shape):
         self.attention_layer2 = WrapCodeModel(name='%s_MultiHeadSelfAttention' % self.name,
                                               head_num=self.head_num,
                                               hidden_dim=self.hidden_dim,
@@ -485,6 +488,7 @@ class EncoderModel(keras.models.Model):
                                               adapter_units=self.adapter_units,
                                               adapter_activation=self.adapter_activation,
                                               use_attention=True,
+                                              input_shape=input_shape
                                               )
 
         self.feed_forward_layer2 = WrapCodeModel(name='%s_FeedForward' % self.name,
@@ -499,9 +503,10 @@ class EncoderModel(keras.models.Model):
                                                  adapter_units=self.adapter_units,
                                                  adapter_activation=self.adapter_activation,
                                                  use_attention=False,
+                                                 input_shape=input_shape
                                                  )
 
-        input_layer = keras.layers.Input(shape=(None, 30), name='{}-Encoder-Input'.format(self.name))
+        input_layer = keras.layers.Input(shape=input_shape, name='{}-Encoder-Input'.format(self.name))
         att2 = self.attention_layer2(input_layer)
         feed2 = self.feed_forward_layer2(att2)
 
@@ -535,6 +540,8 @@ class DecoderModel(keras.models.Model):
                  use_adapter=False,
                  adapter_units=None,
                  adapter_activation='relu',
+                 input_shape=None,
+                 as_layer=True,
                  **kwargs
                  ):
         super(DecoderModel, self).__init__(name=name)
@@ -547,7 +554,7 @@ class DecoderModel(keras.models.Model):
         self.use_adapter = use_adapter
         self.adapter_units = adapter_units
         self.adapter_activation = adapter_activation
-
+        self.as_layer = as_layer
         self.self_attention_layer = None
         self.feed_forward_layer = None
         self.query_attention_layer = None
@@ -555,14 +562,14 @@ class DecoderModel(keras.models.Model):
 
         self.input_layer = self.output_layer = None
 
-        self._build()
+        self._build(input_shape)
 
         super(DecoderModel, self).__init__(inputs=self.input_layer,
                                            outputs=self.output_layer,
                                            name=name,
                                            **kwargs)
 
-    def _build(self):
+    def _build(self, input_shape):
         self.self_attention_layer = WrapCodeModel(name='%s_SelfAttention' % self.name,
                                                   head_num=self.head_num,
                                                   hidden_dim=self.hidden_dim,
@@ -574,7 +581,8 @@ class DecoderModel(keras.models.Model):
                                                   use_adapter=self.use_adapter,
                                                   adapter_units=self.adapter_units,
                                                   adapter_activation=self.adapter_activation,
-                                                  use_attention=True, )
+                                                  use_attention=True,
+                                                  input_shape=input_shape)
 
         self.query_attention_layer = WrapCodeLayer(name='%s_QueryAttention' % self.name,
                                                    head_num=self.head_num,
@@ -589,7 +597,8 @@ class DecoderModel(keras.models.Model):
                                                    adapter_activation=self.adapter_activation,
                                                    is_list=True,
                                                    use_attention=True,
-                                                   as_layer=True)
+                                                   as_layer=self.as_layer,
+                                                   )
 
         self.feed_forward_layer = WrapCodeModel(name='%s_FeedForward' % self.name,
                                                 head_num=self.head_num,
@@ -602,10 +611,12 @@ class DecoderModel(keras.models.Model):
                                                 use_adapter=self.use_adapter,
                                                 adapter_units=self.adapter_units,
                                                 adapter_activation=self.adapter_activation,
-                                                use_attention=False, )
+                                                use_attention=False,
+                                                input_shape=input_shape
+                                                )
 
-        input_layer = keras.layers.Input(shape=(None, 30), name='{}_Decoder_Input'.format(self.name))
-        encoded_layer = keras.layers.Input(shape=(None, 30), name='{}_Decoder_Input_Encode'.format(self.name))
+        input_layer = keras.layers.Input(shape=input_shape, name='{}_Decoder_Input'.format(self.name))
+        encoded_layer = keras.layers.Input(shape=input_shape, name='{}_Decoder_Input_Encode'.format(self.name))
 
         self_att2 = self.self_attention_layer(input_layer)
         query_att2 = self.query_attention_layer([self_att2, encoded_layer, encoded_layer])

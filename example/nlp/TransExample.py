@@ -37,7 +37,7 @@ model = TransformerModel(
     dropout_rate=0.05,
     name='trans',
     embed_weights=np.random.random((len(token_dict), 30)),
-    encode_as_layer=False
+    encode_as_layer=True
 )
 model.compile(
     optimizer='adam',

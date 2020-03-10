@@ -153,6 +153,7 @@ class TransformerModel(keras.models.Model):
                                          use_adapter=self.use_adapter,
                                          adapter_units=self.adapter_units,
                                          adapter_activation=self.adapter_activation,
+                                         input_shape=np.shape(encoder_embed)[1:]
                                          )(encoder_embed)
 
         decoder_input = keras.layers.Input(shape=(None,), name='Decoder-Input')
@@ -169,6 +170,7 @@ class TransformerModel(keras.models.Model):
                                          use_adapter=self.use_adapter,
                                          adapter_units=self.adapter_units,
                                          adapter_activation=self.adapter_activation,
+                                         input_shape=np.shape(decoder_embed)[1:]
                                          )([decoder_embed, encoded_layer])
 
         dense_layer = EmbeddingSim(trainable=self.trainable, name='Output', )([decoded_layer, decoder_embed_weights])
