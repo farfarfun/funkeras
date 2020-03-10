@@ -1,6 +1,6 @@
 import numpy as np
-from keras.layers import Dense, Input, Dropout
-from keras.models import Model
+from tensorflow.keras.layers import Dense, Input, Dropout
+from tensorflow.keras.models import Model
 
 from notekeras.layer.core import FM
 

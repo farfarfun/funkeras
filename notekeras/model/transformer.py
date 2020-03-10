@@ -40,8 +40,7 @@ class TransformerModel(keras.models.Model):
                  trainable=True,
                  use_adapter=False,
                  adapter_units=None,
-                 adapter_activation='relu',
-                 encode_as_layer=False
+                 adapter_activation='relu'
                  , **kwargs):
         """Get full model without compilation.
 
@@ -86,13 +85,13 @@ class TransformerModel(keras.models.Model):
         self.adapter_activation = adapter_activation
 
         self.input_layer = self.output_layer = None
-        self.encode_as_layer = encode_as_layer
+
         self._build()
 
         super(TransformerModel, self).__init__(inputs=self.input_layer,
                                                outputs=self.output_layer,
                                                name=name,
-                                               **kwargs)
+                                               trainable=trainable)
 
     def _build(self):
         if not isinstance(self.token_num, list):
@@ -144,7 +143,7 @@ class TransformerModel(keras.models.Model):
                                          name='Encoder-Embedding',
                                          )(encoder_embed_layer(encoder_input)[0])
 
-        encoded_layer = EncoderComponent(encoder_num=self.decoder_num,
+        encoded_layer = EncoderComponent(encoder_num=self.encoder_num,
                                          head_num=self.head_num,
                                          hidden_dim=self.hidden_dim,
                                          attention_activation=self.attention_activation,
@@ -154,14 +153,13 @@ class TransformerModel(keras.models.Model):
                                          use_adapter=self.use_adapter,
                                          adapter_units=self.adapter_units,
                                          adapter_activation=self.adapter_activation,
-                                         as_layer=self.encode_as_layer
                                          )(encoder_embed)
 
         decoder_input = keras.layers.Input(shape=(None,), name='Decoder-Input')
         decoder_embed, decoder_embed_weights = decoder_embed_layer(decoder_input)
         decoder_embed = TrigPosEmbedding(mode=TrigPosEmbedding.MODE_ADD, name='Decoder-Embedding', )(decoder_embed)
 
-        decoded_layer = DecoderComponent(decoder_num=self.encoder_num,
+        decoded_layer = DecoderComponent(decoder_num=self.decoder_num,
                                          head_num=self.head_num,
                                          hidden_dim=self.hidden_dim,
                                          attention_activation=self.attention_activation,
@@ -171,7 +169,6 @@ class TransformerModel(keras.models.Model):
                                          use_adapter=self.use_adapter,
                                          adapter_units=self.adapter_units,
                                          adapter_activation=self.adapter_activation,
-                                         as_layer=self.encode_as_layer
                                          )([decoder_embed, encoded_layer])
 
         dense_layer = EmbeddingSim(trainable=self.trainable, name='Output', )([decoded_layer, decoder_embed_weights])

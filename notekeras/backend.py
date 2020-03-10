@@ -13,6 +13,7 @@ __all__ = [
 ]
 keras = tf.keras
 
+# keras.backend.set_floatx('float64')
 utils = keras.utils
 activations = keras.activations
 applications = keras.applications

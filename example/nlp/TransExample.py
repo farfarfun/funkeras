@@ -44,6 +44,8 @@ model.compile(
     loss='sparse_categorical_crossentropy',
 )
 model.summary()
+plot_model(model, to_file='transform.png', show_shapes=True)
+plot_model(model, to_file='transform-expand.png', show_shapes=True, expand_nested=True)
 
 # Train the model
 model.fit(
@@ -51,9 +53,6 @@ model.fit(
     y=np.asarray(decoder_outputs * 1000),
     epochs=1,
 )
-print(model.to_json())
-
-plot_model(model, to_file='model.png', show_shapes=True)
 
 decoded = model.decode(
     encoder_inputs_no_padding,
