@@ -4,5 +4,5 @@
 """
 
 from .components import WideDeepComponent
-from .transformer import EncoderComponent, DecoderComponent
 from .transformer import EncoderLayer, DecoderLayer
+from .transformer import EncoderList, DecoderList

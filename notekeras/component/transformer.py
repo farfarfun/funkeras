@@ -1,16 +1,15 @@
-import tensorflow as tf
-
 from notekeras.backend import keras
 from notekeras.layer.attention import MultiHeadAttention
 from notekeras.layer.feed_forward import FeedForward
 from notekeras.layer.normalize import LayerNormalization
 
-Layer = tf.keras.layers.Layer
+Layer = keras.layers.Layer
+Model = keras.models.Model
 
 __all__ = ['get_custom_objects',
            'WrapCodeLayer', 'EncoderLayer', 'DecoderLayer',
            'WrapCodeModel', 'EncoderModel', 'DecoderModel',
-           'EncoderComponent', 'DecoderComponent']
+           'EncoderList', 'DecoderList']
 
 
 def get_custom_objects():
@@ -18,8 +17,8 @@ def get_custom_objects():
         'WrapCodeLayer': WrapCodeLayer,
         'EncoderLayer': EncoderLayer,
         'DecoderLayer': DecoderLayer,
-        'EncoderComponent': EncoderComponent,
-        'DecoderComponent': DecoderComponent
+        'EncoderComponent': EncoderList,
+        'DecoderComponent': DecoderList
     }
 
 
@@ -322,7 +321,7 @@ class DecoderLayer(Layer):
         return config
 
 
-class WrapCodeModel(keras.models.Model):
+class WrapCodeModel(Model):
     def __init__(self,
                  name,
                  head_num,
@@ -436,7 +435,7 @@ class WrapCodeModel(keras.models.Model):
         return input_shape
 
 
-class EncoderModel(keras.models.Model):
+class EncoderModel(Model):
     def __init__(self,
                  head_num,
                  hidden_dim,
@@ -528,7 +527,7 @@ class EncoderModel(keras.models.Model):
         return config
 
 
-class DecoderModel(keras.models.Model):
+class DecoderModel(Model):
     def __init__(self,
                  head_num,
                  hidden_dim,
@@ -636,12 +635,12 @@ class DecoderModel(keras.models.Model):
         return config
 
 
-class EncoderComponent(Layer):
+class EncoderList(Layer):
     def __init__(self,
                  encoder_num,
                  name='Encoder',
                  **kwargs):
-        super(EncoderComponent, self).__init__(name=name)
+        super(EncoderList, self).__init__(name=name)
         self.encoder_num = encoder_num
 
         self.layers = []
@@ -664,12 +663,12 @@ class EncoderComponent(Layer):
         return input_shape
 
 
-class DecoderComponent(Layer):
+class DecoderList(Layer):
     def __init__(self,
                  decoder_num,
                  name='Decoder',
                  **kwargs):
-        super(DecoderComponent, self).__init__(name=name)
+        super(DecoderList, self).__init__(name=name)
         self.decoder_num = decoder_num
         self.layers = []
         self._build(**kwargs)

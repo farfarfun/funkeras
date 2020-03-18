@@ -2,7 +2,7 @@ import numpy as np
 from tensorflow import keras
 
 from notekeras.backend import plot_model
-from notekeras.component.transformer import EncoderModel2, encode_list, WrapCodeModel3
+from notekeras.component.transformer import EncoderModel, WrapCodeModel, EncoderList
 from notekeras.layer import MultiHeadAttention, ScaledDotProductAttention
 
 
@@ -41,10 +41,10 @@ def wrap_attention_example():
 
     # layer = WrapCodeModel2(name='wrap', head_num=2, hidden_dim=2, as_layer=True, input_shape=np.shape(key))
     input = keras.layers.Input(shape=np.shape(key), name='Encoder-Input')
-    layer = WrapCodeModel3(name='aaa', head_num=2,
-                           hidden_dim=2,
-                           use_attention=False,
-                           input_shape=np.shape(key))
+    layer = WrapCodeModel(name='aaa', head_num=2,
+                          hidden_dim=2,
+                          use_attention=False,
+                          input_shape=np.shape(key))
     output = layer(input)
     output = keras.layers.Dense(4)(output)
     model = keras.models.Model(input, output)
@@ -61,7 +61,7 @@ def encode_example():
     key, query, value = data_mock()
 
     input = keras.layers.Input(shape=np.shape(key), name='Encoder_Input')
-    layer1 = EncoderModel2(name='wrap', head_num=2, hidden_dim=2, input_shape=np.shape(key))
+    layer1 = EncoderModel(name='wrap', head_num=2, hidden_dim=2, input_shape=np.shape(key))
     input1 = layer1(input)
 
     output = keras.layers.Dense(3)(input1)
@@ -84,13 +84,13 @@ def encode_list_example():
     print(np.shape(key))
     print(np.shape(input)[1:])
 
-    output1 = EncoderModel2(name='wrap', head_num=2, hidden_dim=2, as_layer=True, input_shape=np.shape(key))(input)
-    output2 = EncoderModel2(name='wrap_2', head_num=2, hidden_dim=2, as_layer=True, input_shape=np.shape(key))(output1)
-    output3 = EncoderModel2(name='wrap3', head_num=2, hidden_dim=2, as_layer=True, input_shape=np.shape(key))(output2)
-    output4 = EncoderModel2(name='wrap4', head_num=2, hidden_dim=2, as_layer=True, input_shape=np.shape(key))(output3)
-    output = EncoderModel2(name='wrap5', head_num=2, hidden_dim=2, as_layer=True, input_shape=np.shape(key))(output4)
+    output1 = EncoderModel(name='wrap', head_num=2, hidden_dim=2, input_shape=np.shape(key))(input)
+    output2 = EncoderModel(name='wrap_2', head_num=2, hidden_dim=2, input_shape=np.shape(key))(output1)
+    output3 = EncoderModel(name='wrap3', head_num=2, hidden_dim=2, input_shape=np.shape(key))(output2)
+    output4 = EncoderModel(name='wrap4', head_num=2, hidden_dim=2, input_shape=np.shape(key))(output3)
+    output = EncoderModel(name='wrap5', head_num=2, hidden_dim=2, input_shape=np.shape(key))(output4)
 
-    output = encode_list(inputs=output, encoder_num=2, head_num=2, hidden_dim=2)
+    output = EncoderList(inputs=output, encoder_num=2, head_num=2, hidden_dim=2)
 
     model = keras.models.Model(input, output)
 
@@ -102,9 +102,8 @@ def encode_list_example():
     print("multi attention")
     print(model([key, query, value]))
 
-
 # attention_example()
 # multi_attention_example()
 # wrap_attention_example()
-encode_example()
+# encode_example()
 # encode_list_example()
