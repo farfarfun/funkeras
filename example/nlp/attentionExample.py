@@ -1,9 +1,15 @@
 import numpy as np
+import tensorflow as tf
 from tensorflow import keras
 
 from notekeras.backend import plot_model
 from notekeras.component.transformer import EncoderModel, WrapCodeModel, EncoderList
 from notekeras.layer import MultiHeadAttention, ScaledDotProductAttention
+
+tf.keras.backend.set_floatx('float64')
+
+
+# tf.compat.v1.disable_eager_execution()
 
 
 def data_mock(batch=32, size=None, feature=10):
@@ -20,10 +26,9 @@ def attention_example():
     layer = ScaledDotProductAttention()
     key, query, value = data_mock()
 
-    print("self attention")
-    print(layer(key))
-    print("attention")
-    print(layer([key, query, value]))
+    print(np.shape(key))
+    print("self attention:{}".format(np.shape(layer(key))))
+    print("attention: {}".format(np.shape(layer([key, query, value]))))
 
 
 def multi_attention_example():
@@ -31,6 +36,7 @@ def multi_attention_example():
     key, query, value = data_mock()
 
     print("self-multi attention")
+
     print(layer(key))
     print("multi attention")
     print(layer([key, query, value]))
@@ -40,7 +46,7 @@ def wrap_attention_example():
     key, query, value = data_mock()
 
     # layer = WrapCodeModel2(name='wrap', head_num=2, hidden_dim=2, as_layer=True, input_shape=np.shape(key))
-    input = keras.layers.Input(shape=np.shape(key), name='Encoder-Input')
+    input = keras.layers.Input(shape=np.shape(key), name='Encoder-Input', dtype=tf.float32)
     layer = WrapCodeModel(name='aaa', head_num=2,
                           hidden_dim=2,
                           use_attention=False,
@@ -60,12 +66,18 @@ def wrap_attention_example():
 def encode_example():
     key, query, value = data_mock()
 
-    input = keras.layers.Input(shape=np.shape(key), name='Encoder_Input')
-    layer1 = EncoderModel(name='wrap', head_num=2, hidden_dim=2, input_shape=np.shape(key))
-    input1 = layer1(input)
+    inputs = keras.layers.Input(shape=np.shape(key)[1:], name='Encoder_Input')
+    layer1 = EncoderModel(name='wrap',
+                          as_model=True,
+                          as_layer=1,
+                          inputs=inputs,
+                          head_num=2,
+                          hidden_dim=2)
+    l2 = layer1(inputs)
+    # l2 = layer1.outputs[0]
 
-    output = keras.layers.Dense(3)(input1)
-    model = keras.models.Model(input, output)
+    output = keras.layers.Dense(3)(l2)
+    model = keras.models.Model(inputs, output)
 
     # model = EncoderModel3(name='wrap', head_num=2, hidden_dim=2, input_shape=np.shape(key))
     plot_model(model, to_file='encode.png', show_shapes=True)
@@ -102,8 +114,14 @@ def encode_list_example():
     print("multi attention")
     print(model([key, query, value]))
 
+
 # attention_example()
 # multi_attention_example()
 # wrap_attention_example()
-# encode_example()
+encode_example()
 # encode_list_example()
+a = False
+if a is True:
+    print(1)
+elif a is False:
+    print(2)

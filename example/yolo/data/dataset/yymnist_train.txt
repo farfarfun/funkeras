@@ -1,0 +1,80 @@
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000001/0.jpg 235,60,782,1348,13
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000001/1.jpg 3,195,1078,1440,13
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000001/2.jpg 274,116,837,1355,13
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000001/3.jpg 0,71,827,1433,13
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000002/3.jpg 105,155,691,616,19
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000002/4.jpg 99,146,712,641,19
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000003/0.jpg 141,133,671,755,1
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000003/3.jpg 125,126,649,737,1
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000004/0.jpg  287,117,574,554,13  342,284,463,479,16 
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000004/1.jpg 222,150,564,742,13
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000004/2.jpg 71,15,746,787,13
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000004/3.jpg 251,150,540,799,13
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000004/4.jpg 204,20,583,761,13
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000005/1.jpg 143,23,508,679,13
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000005/2.jpg 157,21,501,680,13
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000006/0.jpg 74,16,720,780,1
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000006/1.jpg 76,0,719,707,1
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000006/2.jpg 74,125,721,800,1
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000006/3.jpg 166,90,637,652,1
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000006/4.jpg 75,0,718,599,1
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000007/0.jpg 110,135,1046,1261,7
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000007/1.jpg 144,138,1018,1208,7
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000007/2.jpg 179,189,1070,1413,7
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000007/3.jpg 0,31,1082,1440,7
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000008/0.jpg  310,140,486,315,1  324,279,496,684,21 
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000008/1.jpg 192,6,628,797,21
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000008/4.jpg 260,30,549,631,21
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000009/0.jpg 231,50,640,462,17
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000009/2.jpg 241,46,573,507,17
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000009/3.jpg 115,73,689,730,17
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000009/4.jpg 252,75,801,800,17
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000010/1.jpg 544,216,1286,1657,21
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000010/2.jpg 460,173,1271,1691,21
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000011/0.jpg  518,124,760,650,9  0,171,423,800,9 
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000011/1.jpg  100,101,243,576,9  378,158,737,800,9 
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000011/2.jpg  86,95,259,567,9  383,114,801,792,9 
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000011/3.jpg 238,119,656,772,9
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000011/4.jpg 215,154,552,791,9
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000012/0.jpg 229,234,568,659,0
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000012/1.jpg  329,224,668,670,0  150,267,371,672,0 
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000012/2.jpg 118,68,688,732,0
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000012/3.jpg  184,221,430,617,0  317,259,614,653,0 
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000012/4.jpg 135,63,693,733,0
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000013/0.jpg  95,0,553,539,1  191,244,597,725,16 
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000013/1.jpg  52,1,674,469,1  212,224,606,743,16 
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000013/2.jpg  212,157,476,556,1  251,386,477,739,17 
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000013/3.jpg  185,137,552,547,1  246,371,559,752,17 
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000013/4.jpg 87,286,703,800,17
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000014/1.jpg 46,0,741,648,1
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000014/2.jpg 153,121,660,745,1
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000014/4.jpg 155,116,649,718,1
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000015/0.jpg 222,58,565,767,9
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000015/3.jpg 224,57,580,777,9
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000015/4.jpg 215,59,563,772,9
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000016/1.jpg 127,94,1029,1376,0
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000016/3.jpg  120,251,791,1214,0  576,245,1082,1176,0 
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000016/4.jpg 152,140,1006,1336,0
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000017/0.jpg 166,286,636,719,0
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000017/3.jpg 165,128,637,601,0
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000018/0.jpg 214,35,584,695,10
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000018/3.jpg 365,70,848,1110,10
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000018/4.jpg 218,41,599,727,10
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000019/0.jpg 158,222,573,675,1
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000019/2.jpg 234,184,680,686,1
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000020/0.jpg 268,48,491,770,11
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000020/1.jpg 287,30,506,781,11
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000020/2.jpg 301,33,511,758,11
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000020/3.jpg 293,44,508,761,11
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000021/0.jpg 382,297,819,1087,10
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000021/1.jpg 381,264,818,1087,10
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000022/0.jpg 460,117,1244,1880,10
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000022/1.jpg 519,95,1248,1819,10
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000023/0.jpg  422,96,767,720,10  146,156,343,663,10 
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000023/1.jpg  104,140,273,656,10  403,92,755,705,10 
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000023/2.jpg 226,97,573,721,10
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000023/3.jpg 320,137,492,663,10
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000024/1.jpg 230,78,572,728,10
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000024/4.jpg 230,76,571,728,10
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000025/0.jpg 160,38,638,761,0
+/Users/liangtaoniu/tmp/dataset/livedata/Live_demo_20200117/image/000025/1.jpg 158,45,658,758,0

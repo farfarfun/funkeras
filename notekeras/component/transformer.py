@@ -1,4 +1,8 @@
+import tensorflow as tf
+
 from notekeras.backend import keras
+from notekeras.component import Component
+from notekeras.component.core import WrapCodeComponent
 from notekeras.layer.attention import MultiHeadAttention
 from notekeras.layer.feed_forward import FeedForward
 from notekeras.layer.normalize import LayerNormalization
@@ -435,7 +439,80 @@ class WrapCodeModel(Model):
         return input_shape
 
 
-class EncoderModel(Model):
+class EncoderModel(Component):
+    def __init__(self,
+                 head_num,
+                 hidden_dim,
+                 name='Encode',
+                 attention_activation=None,
+                 feed_forward_activation='relu',
+                 dropout_rate=0.0,
+                 trainable=True,
+                 use_adapter=False,
+                 adapter_units=None,
+                 adapter_activation='relu',
+                 *args, **kwargs):
+        self.head_num = head_num
+        self.hidden_dim = hidden_dim
+        self.attention_activation = attention_activation
+        self.feed_forward_activation = feed_forward_activation
+        self.dropout_rate = dropout_rate
+        self.trainable = trainable
+        self.use_adapter = use_adapter
+        self.adapter_units = adapter_units
+        self.adapter_activation = adapter_activation
+
+        self.supports_masking = True
+
+        super(EncoderModel, self).__init__(name=name,
+                                           trainable=trainable,
+                                           *args, **kwargs)
+
+    def _build(self, inputs):
+        attention_layer2 = WrapCodeComponent(name='%s_MultiHeadSelfAttention' % self.name,
+                                             head_num=self.head_num,
+                                             hidden_dim=self.hidden_dim,
+                                             attention_activation=self.attention_activation,
+                                             feed_forward_activation=self.feed_forward_activation,
+                                             history_only=False,
+                                             dropout_rate=self.dropout_rate,
+                                             trainable=self.trainable,
+                                             use_adapter=self.use_adapter,
+                                             adapter_units=self.adapter_units,
+                                             adapter_activation=self.adapter_activation,
+                                             use_attention=True,
+                                             layer_depth=self.layer_depth - 1,
+                                             inputs=inputs,
+                                             )
+        attention_layer2.run_eagerly = False
+
+        feed_forward_layer2 = WrapCodeComponent(name='%s_FeedForward' % self.name,
+                                                head_num=self.head_num,
+                                                hidden_dim=self.hidden_dim,
+                                                attention_activation=self.attention_activation,
+                                                feed_forward_activation=self.feed_forward_activation,
+                                                history_only=False,
+                                                dropout_rate=self.dropout_rate,
+                                                trainable=self.trainable,
+                                                use_adapter=self.use_adapter,
+                                                adapter_units=self.adapter_units,
+                                                adapter_activation=self.adapter_activation,
+                                                use_attention=False,
+                                                layer_depth=self.layer_depth - 1,
+                                                )
+
+        att2 = attention_layer2(inputs)
+        feed2 = feed_forward_layer2(att2)
+        print(tf.shape(inputs))
+        print(tf.shape(att2))
+        print(tf.shape(feed2))
+        return feed2
+
+    def compute_output_shape(self, input_shape):
+        return input_shape
+
+
+class EncoderModel2(Model):
     def __init__(self,
                  head_num,
                  hidden_dim,
@@ -449,7 +526,7 @@ class EncoderModel(Model):
                  adapter_activation='relu',
                  input_shape=None
                  ):
-        super(EncoderModel, self).__init__(name=name)
+        super(EncoderModel2, self).__init__(name=name)
 
         self.head_num = head_num
         self.hidden_dim = hidden_dim
@@ -469,10 +546,10 @@ class EncoderModel(Model):
 
         self._build(input_shape)
 
-        super(EncoderModel, self).__init__(inputs=self.input_layer,
-                                           outputs=self.output_layer,
-                                           name=name,
-                                           trainable=trainable)
+        super(EncoderModel2, self).__init__(inputs=self.input_layer,
+                                            outputs=self.output_layer,
+                                            name=name,
+                                            trainable=trainable)
 
     def _build(self, input_shape):
         self.attention_layer2 = WrapCodeModel(name='%s_MultiHeadSelfAttention' % self.name,
