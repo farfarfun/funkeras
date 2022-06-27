@@ -1,0 +1,12 @@
+build
+dist
+notekeras.egg-info
+output
+jdata_user_action.csv
+tmp
+books/_build/*
+bookdemo
+work
+*.tfrecord
+example/yolo4/models
+*.pyc

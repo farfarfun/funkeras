@@ -1,0 +1,413 @@
+{
+  "layer0": {
+    "name": "multi-concat",
+    "type": "single",
+    "inputs": [
+      {
+        "type": "NumericColumn",
+        "parameters": {
+          "key": "age",
+          "output_tensor": "banner_index_num",
+          "dtype": "float32"
+        }
+      },
+      {
+        "type": "BucketizedColumn",
+        "parameters": {
+          "key": "age",
+          "boundaries": [
+            18,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50,
+            55,
+            60,
+            65
+          ],
+          "output_tensor": "banner_index_num",
+          "dtype": "float32"
+        }
+      },
+      {
+        "type": "BucketIndicatorColumn",
+        "parameters": {
+          "key": "age",
+          "boundaries": [
+            18,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50,
+            55,
+            60,
+            65
+          ],
+          "output_tensor": "banner_index_num",
+          "dtype": "float32"
+        }
+      },
+      {
+        "type": "BucketEmbeddingColumn",
+        "parameters": {
+          "key": "age",
+          "boundaries": [
+            18,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50,
+            55,
+            60,
+            65
+          ],
+          "output_tensor": "banner_index_num",
+          "dtype": "float32",
+          "dimension": 17
+        }
+      },
+      {
+        "type": "NumericColumn",
+        "parameters": {
+          "key": "trestbps",
+          "output_tensor": "banner_index_num",
+          "dtype": "float32"
+        }
+      },
+      {
+        "type": "NumericColumn",
+        "parameters": {
+          "key": "chol",
+          "output_tensor": "banner_index_num",
+          "dtype": "float32"
+        }
+      },
+      {
+        "type": "NumericColumn",
+        "parameters": {
+          "key": "thalach",
+          "output_tensor": "banner_index_num",
+          "dtype": "float32"
+        }
+      },
+      {
+        "type": "NumericColumn",
+        "parameters": {
+          "key": "oldpeak",
+          "output_tensor": "banner_index_num",
+          "dtype": "float32"
+        }
+      },
+      {
+        "type": "NumericColumn",
+        "parameters": {
+          "key": "slope",
+          "output_tensor": "banner_index_num",
+          "dtype": "float32"
+        }
+      },
+      {
+        "type": "NumericColumn",
+        "parameters": {
+          "key": "ca",
+          "output_tensor": "banner_index_num",
+          "dtype": "float32"
+        }
+      },
+      {
+        "type": "CateEmbeddingColumn",
+        "parameters": {
+          "key": "thal",
+          "output_tensor": "thal_embdding",
+          "dimension": 4,
+          "share_name": "item_id",
+          "vocabulary": [
+            "fixed",
+            "normal",
+            "reversible",
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g"
+          ],
+          "dtype": "string"
+        }
+      },
+      {
+        "type": "CateEmbeddingColumn",
+        "parameters": {
+          "key": "thal2",
+          "output_tensor": "thal_embdding",
+          "dimension": 4,
+          "share_name": "thal_id",
+          "vocabulary": [
+            "fixed",
+            "normal",
+            "reversible"
+          ],
+          "dtype": "string"
+        }
+      }
+    ]
+  },
+  "layer2": {
+    "name": "sequence1",
+    "type": "sequence1",
+    "inputs": [
+      {
+        "type": "SequenceCateEmbddingColumn",
+        "parameters": {
+          "key": "arr",
+          "share_name": "item_id",
+          "dtype": "string",
+          "length": 4,
+          "dimension": 9,
+          "vocabulary": [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f"
+          ]
+        }
+      }
+    ]
+  },
+  "layer3": {
+    "name": "sequence2",
+    "type": "sequence2",
+    "inputs": [
+      {
+        "type": "SequenceCateEmbddingColumn",
+        "parameters": {
+          "key": "arr2",
+          "share_name": "item_id",
+          "dtype": "string",
+          "length": 4,
+          "dimension": 9,
+          "vocabulary": [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f"
+          ]
+        }
+      }
+    ]
+  },
+  "layer4": {
+    "name": "multi-concat",
+    "type": "single",
+    "inputs": [
+      {
+        "type": "NumericColumn",
+        "parameters": {
+          "key": "age",
+          "output_tensor": "banner_index_num",
+          "dtype": "float32"
+        }
+      },
+      {
+        "type": "NumericColumn",
+        "parameters": {
+          "key": "trestbps",
+          "output_tensor": "banner_index_num",
+          "dtype": "float32"
+        }
+      },
+      {
+        "type": "NumericColumn",
+        "parameters": {
+          "key": "chol",
+          "output_tensor": "banner_index_num",
+          "dtype": "float32"
+        }
+      },
+      {
+        "type": "NumericColumn",
+        "parameters": {
+          "key": "thalach",
+          "output_tensor": "banner_index_num",
+          "dtype": "float32"
+        }
+      },
+      {
+        "type": "NumericColumn",
+        "parameters": {
+          "key": "oldpeak",
+          "output_tensor": "banner_index_num",
+          "dtype": "float32"
+        }
+      },
+      {
+        "type": "NumericColumn",
+        "parameters": {
+          "key": "slope",
+          "output_tensor": "banner_index_num",
+          "dtype": "float32"
+        }
+      },
+      {
+        "type": "NumericColumn",
+        "parameters": {
+          "key": "ca",
+          "output_tensor": "banner_index_num",
+          "dtype": "float32"
+        }
+      },
+      {
+        "type": "CateEmbeddingColumn",
+        "parameters": {
+          "key": "thal",
+          "output_tensor": "thal_embdding",
+          "dimension": 4,
+          "share_name": "thal_id",
+          "vocabulary": [
+            "fixed",
+            "normal",
+            "reversible"
+          ],
+          "dtype": "string"
+        }
+      },
+      {
+        "type": "CateEmbeddingColumn",
+        "parameters": {
+          "key": "thal2",
+          "output_tensor": "thal_embdding",
+          "dimension": 4,
+          "share_name": "thal_id",
+          "vocabulary": [
+            "fixed",
+            "normal",
+            "reversible"
+          ],
+          "dtype": "string"
+        }
+      }
+    ]
+  },
+  "example1": {
+    "layer1": {
+      "inputs": [
+        {
+          "name": "NumericColumn",
+          "parameters": {
+            "input_tensor": "user_id_creative_id_unique",
+            "output_tensor": "banner_index_num",
+            "dtype": "float32"
+          }
+        },
+        {
+          "name": "NumericColumn",
+          "parameters": {
+            "input_tensor": "user_id_creative_id_count",
+            "output_tensor": "banner_index_num",
+            "dtype": "float32"
+          }
+        },
+        {
+          "name": "NumericColumn",
+          "parameters": {
+            "input_tensor": "user_id_ad_id_unique",
+            "output_tensor": "banner_index_num",
+            "dtype": "float32"
+          }
+        },
+        {
+          "name": "NumericColumn",
+          "parameters": {
+            "input_tensor": "user_id_ad_id_count",
+            "output_tensor": "banner_index_num",
+            "dtype": "float32"
+          }
+        },
+        {
+          "name": "NumericColumn",
+          "parameters": {
+            "input_tensor": "user_id_product_id_unique",
+            "output_tensor": "banner_index_num",
+            "dtype": "float32"
+          }
+        },
+        {
+          "name": "NumericColumn",
+          "parameters": {
+            "input_tensor": "user_id_product_category_unique",
+            "output_tensor": "banner_index_num",
+            "dtype": "float32"
+          }
+        },
+        {
+          "name": "NumericColumn",
+          "parameters": {
+            "input_tensor": "user_id_product_category_count",
+            "output_tensor": "banner_index_num",
+            "dtype": "float32"
+          }
+        },
+        {
+          "name": "NumericColumn",
+          "parameters": {
+            "input_tensor": "user_id_advertiser_id_unique",
+            "output_tensor": "banner_index_num",
+            "dtype": "float32"
+          }
+        },
+        {
+          "name": "NumericColumn",
+          "parameters": {
+            "input_tensor": "user_id_advertiser_id_count",
+            "output_tensor": "banner_index_num",
+            "dtype": "float32"
+          }
+        },
+        {
+          "name": "NumericColumn",
+          "parameters": {
+            "input_tensor": "user_id_industry_unique",
+            "output_tensor": "banner_index_num",
+            "dtype": "float32"
+          }
+        },
+        {
+          "name": "NumericColumn",
+          "parameters": {
+            "input_tensor": "user_id_industry_count",
+            "output_tensor": "banner_index_num",
+            "dtype": "float32"
+          }
+        }
+      ]
+    },
+    "layer2": {
+      "name": "sequence1",
+      "type": "sequence1",
+      "inputs": [
+        {
+          "type": "SequenceCateEmbddingColumn",
+          "parameters": {
+            "key": "arr",
+            "share_name": "item_id",
+            "dtype": "string",
+            "length": 4,
+            "dimension": 9,
+            "vocabulary": ""
+          }
+        }
+      ]
+    }
+  }
+}
