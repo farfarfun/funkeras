@@ -17,4 +17,4 @@ for features in ds_train.take(1):
 import keras
 
 keras.constraints.serialize()
-# https://github.com/notechats/notedrive.git
+# https://github.com/notechats/fundrive.git
