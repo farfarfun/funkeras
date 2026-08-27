@@ -1,6 +1,6 @@
 [project]
 name = "funkeras"
-version = "0.8.12"
+version = "0.8.13"
 description = "keras 相关模型、层与工具集合（attention、transformer、bert、yolo 等的学习与整理实现）"
 readme = "README.md"
 requires-python = ">=3.10"
