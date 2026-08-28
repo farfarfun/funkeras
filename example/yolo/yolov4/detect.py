@@ -6,10 +6,10 @@ import tensorflow as tf
 from PIL import Image
 
 from fundrive.lanzou import LanZouCloud, CodeDetail, download
-import notekeras.model.yolo4.core.utils as utils
-from notekeras.backend import plot_model
-from notekeras.model.yolo4.core.yolov4 import YOLO, decode
-from notekeras.model.yolo4.core.yolov4 import filter_boxes
+import funkeras.model.yolo4.core.utils as utils
+from funkeras.backend import plot_model
+from funkeras.model.yolo4.core.yolov4 import YOLO, decode
+from funkeras.model.yolo4.core.yolov4 import filter_boxes
 
 data_root = "/root/workspace/notechats/notekeras/example/yolo/"
 

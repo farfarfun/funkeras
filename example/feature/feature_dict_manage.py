@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from notekeras.features import FeatureDictManage
+from funkeras.features import FeatureDictManage
 from pandas import DataFrame
 
 if __name__ == '__main__':

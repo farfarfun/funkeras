@@ -4,8 +4,8 @@ import demjson
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-from notekeras.component.transformer import EncoderComponent
-from notekeras.features import ParseFeatureConfig
+from funkeras.component.transformer import EncoderComponent
+from funkeras.features import ParseFeatureConfig
 from sklearn.model_selection import train_test_split
 from tensorflow import feature_column, keras
 from tensorflow.keras import backend, layers

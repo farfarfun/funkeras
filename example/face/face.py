@@ -2,8 +2,8 @@ import numpy as np
 from tensorflow.keras.applications.resnet50 import ResNet50
 from tensorflow.keras.preprocessing import image
 
-import notekeras.model.resnet as res
-from notekeras.model.temp import preprocess_input
+import funkeras.model.resnet as res
+from funkeras.model.temp import preprocess_input
 
 
 def run1():

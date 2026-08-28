@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-from notekeras.layer.fm import FM
+from funkeras.layer.fm import FM
 from sklearn.datasets import load_breast_cancer
 from tensorflow import keras
 from tensorflow.keras import Model, activations

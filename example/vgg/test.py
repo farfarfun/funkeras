@@ -1,5 +1,5 @@
-from notekeras.model.vgg.vgg16 import VGG16
-from notekeras.model.vgg.vgg19 import VGG19
+from funkeras.model.vgg.vgg16 import VGG16
+from funkeras.model.vgg.vgg19 import VGG19
 
 #from tensorflow.keras.applications.vgg16 import VGG16
 #from tensorflow.keras.applications.vgg19 import VGG19

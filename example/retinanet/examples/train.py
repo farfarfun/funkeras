@@ -3,13 +3,13 @@ import os
 from tensorflow import keras
 from tensorflow.keras.callbacks import TensorBoard, ReduceLROnPlateau
 
-from notekeras.model.retinanet import models
-from notekeras.model.retinanet.generator import TextGenerator
-from notekeras.model.retinanet.losses import smooth_l1, focal
-from notekeras.model.retinanet.models.retinanet import RetinaNetBox
-from notekeras.model.retinanet.utils.image import random_visual_effect_generator
-from notekeras.model.retinanet.utils.transform import random_transform_generator
-from notekeras.utils.model import freeze
+from funkeras.model.retinanet import models
+from funkeras.model.retinanet.generator import TextGenerator
+from funkeras.model.retinanet.losses import smooth_l1, focal
+from funkeras.model.retinanet.models.retinanet import RetinaNetBox
+from funkeras.model.retinanet.utils.image import random_visual_effect_generator
+from funkeras.model.retinanet.utils.transform import random_transform_generator
+from funkeras.utils.model import freeze
 
 
 def create_models(backbone_retinanet, num_classes, weights=None, freeze_backbone=False, lr=1e-5):

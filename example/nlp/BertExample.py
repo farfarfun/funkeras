@@ -1,6 +1,6 @@
-from notekeras.backend import keras
-from notekeras.model.bert import get_model, BertModel, gen_batch_inputs
-from notekeras.tokenizer import get_base_dict
+from funkeras.backend import keras
+from funkeras.model.bert import get_model, BertModel, gen_batch_inputs
+from funkeras.tokenizer import get_base_dict
 
 # 随便的输入样例：
 sentence_pairs = [

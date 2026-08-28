@@ -2,7 +2,7 @@ import numpy as np
 from tensorflow.keras.layers import Dense, Input, Dropout
 from tensorflow.keras.models import Model
 
-from notekeras.layer.core import FM
+from funkeras.layer.core import FM
 
 
 def tes_model(x_train, x_test, y_train, y_test, train=False):

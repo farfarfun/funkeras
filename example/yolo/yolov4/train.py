@@ -4,11 +4,11 @@ import shutil
 import numpy as np
 import tensorflow as tf
 
-from notekeras.model.yolo4.core import utils
-from notekeras.model.yolo4.core.config import cfg
-from notekeras.model.yolo4.core.dataset import Dataset
-from notekeras.model.yolo4.core.utils import freeze_all, unfreeze_all
-from notekeras.model.yolo4.core.yolov4 import YOLO, compute_loss, decode_train
+from funkeras.model.yolo4.core import utils
+from funkeras.model.yolo4.core.config import cfg
+from funkeras.model.yolo4.core.dataset import Dataset
+from funkeras.model.yolo4.core.utils import freeze_all, unfreeze_all
+from funkeras.model.yolo4.core.yolov4 import YOLO, compute_loss, decode_train
 
 data_root = '/Users/liangtaoniu/workspace/MyDiary/notechats/notekeras/example/yolo4'
 

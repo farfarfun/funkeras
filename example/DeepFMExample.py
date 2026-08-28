@@ -1,6 +1,6 @@
-from notekeras.backend import keras
-from notekeras.component.components import DeepFM
-from notekeras.layer import SelfMean, SelfSum, MaskFlatten
+from funkeras.backend import keras
+from funkeras.component.components import DeepFM
+from funkeras.layer import SelfMean, SelfSum, MaskFlatten
 
 Model = keras.models.Model
 plot_model = keras.utils.plot_model

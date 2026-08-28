@@ -4,8 +4,8 @@ import cv2
 import numpy as np
 from PIL import Image
 from fundrive.lanzou import download
-from notekeras.model.yolo3 import YoloBody
-from notekeras.utils import read_lines, draw_bbox
+from funkeras.model.yolo3 import YoloBody
+from funkeras.utils import read_lines, draw_bbox
 
 root = "/root/workspace/notechats/notekeras/example/yolo"
 classes = read_lines(root + "/data/classes/coco.names")

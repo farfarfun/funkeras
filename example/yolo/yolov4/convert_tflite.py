@@ -6,7 +6,7 @@ import tensorflow as tf
 from absl import app, flags, logging
 from absl.flags import FLAGS
 
-import notekeras.model.yolo4.core.utils as utils
+import funkeras.model.yolo4.core.utils as utils
 
 flags.DEFINE_string('weights', './checkpoints/yolov4-416', 'path to weights file')
 flags.DEFINE_string('output', './checkpoints/yolov4-416-fp32.tflite', 'path to output')

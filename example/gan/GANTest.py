@@ -1,4 +1,4 @@
-from notekeras.sample.gan import *
+from funkeras.sample.gan import *
 
 # model = GAN()
 # model = ACGAN()

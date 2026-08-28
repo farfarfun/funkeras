@@ -2,10 +2,10 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 
-from notekeras.backend import plot_model
-from notekeras.component.transformer import (DecoderList, EncoderComponent,
+from funkeras.backend import plot_model
+from funkeras.component.transformer import (DecoderList, EncoderComponent,
                                              EncoderList)
-from notekeras.layers import MultiHeadAttention, ScaledDotProductAttention
+from funkeras.layers import MultiHeadAttention, ScaledDotProductAttention
 
 tf.keras.backend.set_floatx('float64')
 

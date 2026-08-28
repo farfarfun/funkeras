@@ -12,8 +12,8 @@ from pyspark.sql.types import StringType
 from tensorflow import keras
 from tensorflow.keras import layers
 
-from notekeras.component.transformer import EncoderList
-from notekeras.feature import ParseFeatureConfig
+from funkeras.component.transformer import EncoderList
+from funkeras.feature import ParseFeatureConfig
 from notetool.load.core import DataLoadAndSave
 
 pd.set_option('max_colwidth', 500)

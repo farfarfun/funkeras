@@ -1,8 +1,8 @@
 import numpy as np
 
-from notekeras.model.loader import get_checkpoint_config
-from notekeras.model.loader import load_trained_model_from_checkpoint, PreTrainedList, load_vocabulary
-from notekeras.tokenizer import Tokenizer
+from funkeras.model.loader import get_checkpoint_config
+from funkeras.model.loader import load_trained_model_from_checkpoint, PreTrainedList, load_vocabulary
+from funkeras.tokenizer import Tokenizer
 
 config = get_checkpoint_config(info=PreTrainedList.chinese_base)
 model = load_trained_model_from_checkpoint(config.config, config.checkpoint, training=True, seq_len=None)

@@ -1,7 +1,7 @@
 import numpy as np
 
-from notekeras.backend import layers, Model
-from notekeras.layer.core import CrossLayer, FM
+from funkeras.backend import layers, Model
+from funkeras.layer.core import CrossLayer, FM
 
 
 def model_base(x_train, x_test, y_train, y_test, train=False):

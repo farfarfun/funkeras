@@ -4,10 +4,10 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
-from notekeras.model.retinanet import models
-from notekeras.model.retinanet.models.retinanet import RetinaNetBox
-from notekeras.model.retinanet.utils.image import read_image_bgr, preprocess_image, resize_image
-from notekeras.model.retinanet.utils.visualization import draw_box, draw_caption, label_color
+from funkeras.model.retinanet import models
+from funkeras.model.retinanet.models.retinanet import RetinaNetBox
+from funkeras.model.retinanet.utils.image import read_image_bgr, preprocess_image, resize_image
+from funkeras.model.retinanet.utils.visualization import draw_box, draw_caption, label_color
 
 gpu = 0
 

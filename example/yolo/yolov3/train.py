@@ -1,9 +1,9 @@
 import numpy as np
 import tensorflow as tf
 
-from notekeras.model.yolo3 import Dataset, YoloDataset
-from notekeras.model.yolo3 import YoloBody
-from notekeras.utils import read_lines
+from funkeras.model.yolo3 import Dataset, YoloDataset
+from funkeras.model.yolo3 import YoloBody
+from funkeras.utils import read_lines
 
 root = '/Users/liangtaoniu/workspace/MyDiary/notechats/notekeras/example/yolo'
 classes = read_lines(root + "/data/classes/coco.names")
