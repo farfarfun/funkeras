@@ -1,7 +1,7 @@
 import datetime
 import pickle
 
-from notedata.dataset.datas import CriteoData, ElectronicsData
+from fundata.dataset.datas import CriteoData, ElectronicsData
 from tensorflow.keras import (callbacks, losses, metrics, optimizers,
                               preprocessing)
 from tensorflow.keras.callbacks import EarlyStopping

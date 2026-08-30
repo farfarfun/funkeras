@@ -5,7 +5,7 @@ import warnings
 
 import numpy as np
 import tensorflow as tf
-from notedata.dataset.datas import CriteoData, ElectronicsData
+from fundata.dataset.datas import CriteoData, ElectronicsData
 from tensorflow import keras
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.losses import binary_crossentropy

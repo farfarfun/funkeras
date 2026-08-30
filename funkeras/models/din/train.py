@@ -4,7 +4,7 @@ import pickle
 
 import numpy as np
 import tensorflow as tf
-from notedata.dataset import ElectronicsData
+from fundata.dataset import ElectronicsData
 from tensorflow import keras
 
 from .model import DIN
