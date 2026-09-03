@@ -14,7 +14,7 @@ from tensorflow.keras import layers
 
 from funkeras.component.transformer import EncoderList
 from funkeras.feature import ParseFeatureConfig
-from notetool.load.core import DataLoadAndSave
+from funtool.load.core import DataLoadAndSave
 
 pd.set_option('max_colwidth', 500)
 pd.set_option('display.max_rows', 200)
