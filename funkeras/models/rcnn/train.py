@@ -5,6 +5,7 @@ import time
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
+from farlog import getLogger
 from tensorflow.keras import Model
 from tensorflow.keras.layers import Input
 from tensorflow.keras.optimizers import Adam
@@ -18,6 +19,8 @@ from funkeras.models.rcnn.utils import anchor
 from funkeras.models.rcnn.utils import image_processing
 from funkeras.models.rcnn.utils.iou import calc_iou
 from funkeras.models.rcnn.utils.nms import rpn_to_roi
+
+logger = getLogger("funkeras")
 
 cfg = Config()
 net = resnet50
@@ -255,9 +258,11 @@ def train(network):
 
                 # Randomly choose (num_rois - num_pos) neg samples
                 try:
+                    # 优先不放回采样；负样本数量不足 (num_rois - 正样本数) 时 numpy 会抛 ValueError，
+                    # 此时退化为放回采样。
                     selected_neg_samples = np.random.choice(neg_samples, cfg.num_rois - len(selected_pos_samples),
                                                             replace=False).tolist()
-                except:
+                except ValueError:
                     selected_neg_samples = np.random.choice(neg_samples, cfg.num_rois - len(selected_pos_samples),
                                                             replace=True).tolist()
 
@@ -315,8 +320,8 @@ def train(network):
 
                     break
 
-            except Exception as e:
-                print('Exception: {}'.format(e))
+            except Exception:
+                logger.exception(f"训练迭代 iter_num={iter_num} 失败，跳过本次迭代继续训练")
                 continue
 
     print('Training complete, exiting.')

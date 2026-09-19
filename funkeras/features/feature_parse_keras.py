@@ -3,6 +3,7 @@
 https://github.com/tensorflow/community/blob/master/rfcs/20191212-keras-categorical-inputs.md
 """
 import tensorflow as tf
+from funkeras.exceptions import FeatureConfigError
 from funkeras.layers.core import SelfSum
 from tensorflow.keras import backend as K
 from tensorflow.keras.layers import Concatenate, Embedding, Input, Layer
@@ -223,7 +224,10 @@ class ParseFeatureConfig:
         elif len(outputs) == 1:
             outputs = outputs[0]
         else:
-            raise Exception("Empty")
+            raise FeatureConfigError(
+                "layer_json['inputs'] 解析后没有产出任何特征列，无法继续构图",
+                context=layer_json,
+            )
 
         return outputs
 
@@ -235,7 +239,10 @@ class ParseFeatureConfig:
 
         method = self._get_columns_map(feature_type_name)
         if method is None or not isinstance(feature_para, dict):
-            raise Exception("error")
+            raise FeatureConfigError(
+                f"无法识别的序列特征类型 {feature_type_name!r}，或 parameters 不是 dict",
+                context=layer_json,
+            )
 
         sequence_input, sequence_length = method(feature_para)
         return sequence_input, sequence_length

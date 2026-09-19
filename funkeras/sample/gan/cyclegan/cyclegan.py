@@ -3,6 +3,7 @@ import os
 
 import matplotlib.pyplot as plt
 import numpy as np
+from farlog import getLogger
 from tensorflow.keras.layers import Input, Dropout, Concatenate
 from tensorflow.keras.layers import LeakyReLU
 from tensorflow.keras.layers import UpSampling2D, Conv2D
@@ -10,6 +11,8 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 
 from .data_loader import DataLoader
+
+logger = getLogger("funkeras")
 
 
 class CycleGAN():
@@ -197,7 +200,7 @@ class CycleGAN():
                 elapsed_time = datetime.datetime.now() - start_time
 
                 # Plot the progress
-                print(
+                logger.info(
                     "[Epoch %d/%d] [Batch %d/%d] [D loss: %f, acc: %3d%%] [G loss: %05f, adv: %05f, recon: %05f, id: %05f] time: %s " \
                     % (epoch, epochs,
                        batch_i, self.data_loader.n_batches,

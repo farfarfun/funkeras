@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 import tensorflow.keras.backend as K
+from farlog import getLogger
 from tensorflow.keras.callbacks import TensorBoard, ModelCheckpoint, ReduceLROnPlateau, EarlyStopping
 from tensorflow.keras.layers import Input, Conv2D, Dense, Flatten, Multiply
 from tensorflow.keras.models import Model
@@ -15,6 +16,8 @@ from tqdm import tqdm
 
 from funkeras.utils.image import image_resize, read_image_batch
 from funkeras.utils.util import compose
+
+logger = getLogger("funkeras")
 
 
 class SimilarityDataset(object):
@@ -76,7 +79,7 @@ class SimilarityDataset(object):
                 serialized = tf_example.SerializeToString()
                 writer.write(serialized)
 
-        print('tfrecord done.{}'.format(len(self.annotations)))
+        logger.info(f"tfrecord done. {len(self.annotations)}")
 
         def parse_fn(example_proto):
             features = {

@@ -1,8 +1,9 @@
 
-import logging
-
 import tensorflow as tf
+from farlog import getLogger
 from typeguard import typechecked
+
+logger = getLogger("funkeras")
 
 
 # tensorflow_addons
@@ -49,7 +50,7 @@ class WeightNormalization(tf.keras.layers.Wrapper):
         self.is_rnn = isinstance(self.layer, tf.keras.layers.RNN)
 
         if self.data_init and self.is_rnn:
-            logging.warning(
+            logger.warning(
                 "WeightNormalization: Using `data_init=True` with RNNs "
                 "is advised against by the paper. Use `data_init=False`."
             )

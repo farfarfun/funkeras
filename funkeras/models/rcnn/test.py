@@ -114,7 +114,8 @@ def test(net, weights, image_path, thresh=0.7):
                 tw /= cfg.classifier_regr_std[2]
                 th /= cfg.classifier_regr_std[3]
                 x, y, w, h = apply_regr(x, y, w, h, tx, ty, tw, th)
-            except:
+            except (ValueError, IndexError, TypeError):
+                # P_regr 切片长度不足 4 或 cfg.classifier_regr_std 缺项时，保留未回归的原始框。
                 pass
             bboxes[cls_name].append(
                 [cfg.rpn_stride * x, cfg.rpn_stride * y, cfg.rpn_stride * (x + w), cfg.rpn_stride * (y + h)])

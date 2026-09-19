@@ -1,8 +1,11 @@
 import cv2
 import numpy as np
+from farlog import getLogger
 
 from funkeras.models.rcnn.utils.image_processing import augment, get_new_img_size
 from funkeras.models.rcnn.utils.nms import calc_rpn
+
+logger = getLogger("funkeras")
 
 
 def get_anchor_gt(all_img_data, C, img_length_calc_function, mode='train'):
@@ -49,7 +52,10 @@ def get_anchor_gt(all_img_data, C, img_length_calc_function, mode='train'):
                 try:
                     y_rpn_cls, y_rpn_regr, num_pos = calc_rpn(C, img_data_aug, width, height, resized_width,
                                                               resized_height, img_length_calc_function)
-                except:
+                except Exception:
+                    logger.exception(
+                        f"计算 RPN anchor 失败，跳过该样本：{img_data.get('filepath', img_data)}"
+                    )
                     continue
 
                 # Zero-center by mean pixel, and preprocess image

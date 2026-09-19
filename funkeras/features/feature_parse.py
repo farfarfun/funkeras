@@ -1,6 +1,7 @@
 import pickle
 
 import tensorflow as tf
+from funkeras.exceptions import FeatureConfigError
 from funkeras.layers import TrigPosEmbedding
 from tensorflow.keras import backend as K
 from tensorflow.keras.layers import (Concatenate, DenseFeatures, Embedding,
@@ -52,7 +53,10 @@ def _get_categorical_column(params: dict) -> fc.CategoricalColumn:
         feature = fc.bucketized_column(fc.numeric_column(
             params['key']), boundaries=params['boundaries'])
     else:
-        raise Exception("params error")
+        raise FeatureConfigError(
+            "params 缺少 vocabulary/bucket_size/file/num_buckets/boundaries 之一，无法识别类别列类型",
+            context=params,
+        )
 
     return feature
 
@@ -75,7 +79,10 @@ def _get_sequence_categorical_column(params: dict) -> fc.SequenceCategoricalColu
         feature = sfc.sequence_categorical_column_with_identity(key,
                                                                 num_buckets=params['num_buckets'])
     else:
-        raise Exception("params error")
+        raise FeatureConfigError(
+            "params 缺少 vocabulary/bucket_size/file/num_buckets 之一，无法识别序列类别列类型",
+            context=params,
+        )
 
     return feature
 
@@ -279,7 +286,10 @@ class ParseFeatureConfig:
 
         method = self._get_columns_map(feature_type_name)
         if method is None or not isinstance(feature_para, dict):
-            raise Exception("error")
+            raise FeatureConfigError(
+                f"无法识别的序列特征类型 {feature_type_name!r}，或 parameters 不是 dict",
+                context=layer_json,
+            )
 
         sequence_input, sequence_length = method(feature_para)
         return sequence_input, sequence_length

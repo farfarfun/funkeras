@@ -2,8 +2,11 @@ import math
 import random
 
 import numpy as np
+from farlog import getLogger
 
 from funkeras.models.rcnn.utils.iou import iou
+
+logger = getLogger("funkeras")
 
 
 def calc_rpn(C, img_data, width, height, resized_width, resized_height, img_length_calc_function):
@@ -420,8 +423,9 @@ def apply_regr_np(X, T):
         w1 = np.round(w1)
         h1 = np.round(h1)
         return np.stack([x1, y1, w1, h1])
-    except Exception as e:
-        print(e)
+    except Exception:
+        # 回归计算异常（如数值溢出）时保留原始 anchor，不中断整批推理。
+        logger.exception("apply_regr_np 回归计算失败，返回未回归的原始 anchor")
         return X
 
 
@@ -447,6 +451,6 @@ def apply_regr(x, y, w, h, tx, ty, tw, th):
         return x, y, w, h
     except OverflowError:
         return x, y, w, h
-    except Exception as e:
-        print(e)
+    except Exception:
+        logger.exception("apply_regr 回归计算失败，返回未回归的原始坐标")
         return x, y, w, h

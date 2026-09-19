@@ -6,6 +6,10 @@ from sklearn.preprocessing import (Binarizer, LabelBinarizer, LabelEncoder,
                                    MaxAbsScaler, MinMaxScaler, Normalizer,
                                    OneHotEncoder, RobustScaler, StandardScaler)
 
+from farlog import getLogger
+
+logger = getLogger("funkeras")
+
 
 class FeaturePreProcessing:
     def __init__(self):
@@ -37,7 +41,7 @@ class FeaturePreProcessing:
                         fields[field_k][field] = {}
             return fields
         else:
-            print("error")
+            logger.warning(f"_field_converse 收到无法识别的 fields 类型：{fields!r}，原样返回")
             return fields
 
     def _fit(self, dataframe: DataFrame, field_k, field_v=None, *args, **kwargs):
