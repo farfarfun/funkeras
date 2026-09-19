@@ -10,6 +10,15 @@ work
 *.tfrecord
 example/yolo4/models
 *.pyc
+__pycache__/
+*.db
+*.rar
+*.egg-info/
+.venv/
+.run/
+logs/
+.idea/
+.vscode/
 
 # ---- AI 编码助手 ----
 # 只忽略本地状态；团队有意共享的 agent / 命令 / 规则定义仍然版本化。
