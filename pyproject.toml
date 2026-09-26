@@ -28,4 +28,4 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 # `notekeras` 是废弃导入路径的兼容层（只有一个 __init__.py，转发到
 # funkeras），保留到下一次破坏性版本再删除。
-packages = ["funkeras", "notekeras"]
+packages = ["src/funkeras", "src/notekeras"]

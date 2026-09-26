@@ -1,4 +1,5 @@
 import math
+import os
 
 
 class Config:
@@ -57,13 +58,16 @@ class Config:
         # with bg as the number of classes
         # for example, if your dataset has three classes
         # your class_mapping should go like this {'class1': 0, 'class2': 1, 'class3': 2, 'bg':3}
-        classes = open('/Users/liangtaoniu/workspace/MyDiary/src/tianchi/live/data/classes/coco.names', 'r').read()
-        classes = classes.split('\n')
-        class_map = {}
-        for i, key in enumerate(classes):
-            class_map[key] = i
-        self.class_mapping = {'pikachu': 0, 'bg': 1}
-        self.class_mapping = class_map
+        classes_path = os.environ.get("FUNKERAS_CLASSES_FILE")
+        if classes_path and os.path.exists(classes_path):
+            with open(classes_path, encoding="utf-8") as classes_file:
+                self.class_mapping = {
+                    name: index
+                    for index, name in enumerate(classes_file.read().splitlines())
+                    if name
+                }
+        else:
+            self.class_mapping = {"pikachu": 0, "bg": 1}
 
         self.model_path = None
         self.training_annotation = None

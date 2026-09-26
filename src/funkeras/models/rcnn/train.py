@@ -1,6 +1,7 @@
 import pickle
 import random
 import time
+import os
 
 import cv2
 import matplotlib.pyplot as plt
@@ -29,11 +30,10 @@ cfg.network = resnet50
 cfg.use_horizontal_flips = True
 cfg.use_vertical_flips = True
 cfg.rot_90 = True
-cfg.base_net_weights = '/Users/liangtaoniu/.keras/models/resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5'
-cfg.cfg_save_path = '/Users/liangtaoniu/workspace/MyDiary/tmp/models/rcnn/config/res_config.pickle'
-cfg.model_path = '/Users/liangtaoniu/workspace/MyDiary/tmp/models/rcnn/weights/res_frcnn.hdf5'
-
-cfg.training_annotation = '/Users/liangtaoniu/workspace/MyDiary/src/tianchi/live/data/train/image_item_train.txt'
+cfg.base_net_weights = os.environ.get("FUNKERAS_BASE_NET_WEIGHTS")
+cfg.cfg_save_path = os.environ.get("FUNKERAS_CONFIG_SAVE_PATH", "rcnn-config.pickle")
+cfg.model_path = os.environ.get("FUNKERAS_MODEL_PATH", "rcnn-weights.hdf5")
+cfg.training_annotation = os.environ.get("FUNKERAS_TRAINING_ANNOTATION")
 
 
 def get_data():
@@ -45,8 +45,9 @@ def get_data():
     with open(cfg.cfg_save_path, 'wb') as config_f:
         try:
             pickle.dump(cfg, config_f)
-        except Exception as e:
-            print(e)
+        except (OSError, pickle.PickleError) as e:
+            logger.error(f"保存 RCNN 配置失败: {cfg.cfg_save_path}: {e}")
+            raise
 
     # Shuffle the images with seed
     random.seed(1)

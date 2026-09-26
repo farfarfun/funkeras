@@ -1,5 +1,6 @@
 import numpy as np
 import tensorflow as tf
+from typing import Any
 from scipy import sparse as sp
 from tensorflow.keras import backend as K
 from tensorflow.python.ops import gen_sparse_ops
@@ -194,27 +195,8 @@ def disjoint_adjacency_to_batch(A, I):
     return batch
 
 
-def autodetect_mode(x, a):
-    """
-    Returns a code that identifies the data mode from the given node features
-    and adjacency matrix(s).
-    The output of this function can be used as follows:
-
-    ```py
-    from spektral.layers.ops import modes
-    mode = modes.autodetect_mode(x, a)
-    if mode == modes.SINGLE:
-        print('Single!')
-    elif mode == modes.BATCH:
-        print('Batch!')
-    elif mode == modes.MIXED:
-        print('Mixed!')
-    ```
-
-    :param x: Tensor or SparseTensor representing the node features
-    :param a: Tensor or SparseTensor representing the adjacency matrix(s)
-    :return: mode of operation as an integer code.
-    """
+def autodetect_mode(x: Any, a: Any) -> int:
+    """根据节点特征和邻接矩阵维度返回数据模式常量。"""
     x_ndim = K.ndim(x)
     a_ndim = K.ndim(a)
     if x_ndim == 2 and a_ndim == 2:

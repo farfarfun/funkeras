@@ -1,8 +1,13 @@
+import os
+from pathlib import Path
+
 from easydict import EasyDict as edict
 
 __C = edict()
 
-data_root = '/Users/liangtaoniu/workspace/MyDiary/notechats/notekeras/example/yolo4'
+data_root = os.environ.get(
+    "FUNKERAS_YOLO_ROOT", str(Path.home() / ".cache/funkeras/yolo4")
+)
 cfg = __C
 
 # YOLO options
@@ -22,7 +27,7 @@ __C.YOLO.IOU_LOSS_THRESH = 0.5
 # Train options
 __C.TRAIN = edict()
 
-__C.TRAIN.ANNOT_PATH = '/Users/liangtaoniu/workspace/dataset/models/coco/train.txt'
+__C.TRAIN.ANNOT_PATH = os.environ.get("FUNKERAS_TRAIN_ANNOTATION", "")
 __C.TRAIN.BATCH_SIZE = 2
 # __C.TRAIN.INPUT_SIZE            = [320, 352, 384, 416, 448, 480, 512, 544, 576, 608]
 __C.TRAIN.INPUT_SIZE = 416
@@ -36,7 +41,7 @@ __C.TRAIN.SECOND_STAGE_EPOCHS = 30
 # TEST options
 __C.TEST = edict()
 
-__C.TEST.ANNOT_PATH = '/Users/liangtaoniu/workspace/dataset/models/coco/train.txt'
+__C.TEST.ANNOT_PATH = os.environ.get("FUNKERAS_TEST_ANNOTATION", "")
 __C.TEST.BATCH_SIZE = 2
 __C.TEST.INPUT_SIZE = 416
 __C.TEST.DATA_AUG = False

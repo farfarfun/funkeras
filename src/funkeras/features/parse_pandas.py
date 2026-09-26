@@ -10,7 +10,7 @@ pd.set_option('display.max_rows', 200)
 pd.set_option('max_colwidth', 500)
 
 
-def agg_set(size=-1, padding=False):
+def agg_set(size: int = -1, padding: bool = False):
     def inner(x):
         if size <= 0:
             return list(set(x))
@@ -23,7 +23,7 @@ def agg_set(size=-1, padding=False):
     return inner
 
 
-def agg_list(size=-1, padding=False):
+def agg_list(size: int = -1, padding: bool = False):
     # def inner(x):
     #     if size <= 0:
     #         return list(x)
@@ -43,10 +43,7 @@ def agg_list(size=-1, padding=False):
         return lambda x: list(list(x)[-size:] + ['0'] * (size - len(list(x))))
 
 
-print(agg_list(size=10, padding=True)([1, 2, 5]))
-
-
-def agg_array(size=-1, pct=True):
+def agg_array(size: int = -1, pct: bool = True):
     def inner(x):
         category_list = np.zeros(size)
         for category in list(x):
