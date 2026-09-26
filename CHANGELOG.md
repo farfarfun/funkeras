@@ -10,6 +10,9 @@
 
 ### 修复
 
+- `requires-python` 下限由 `>=3.10` 提升至 `>=3.11`：Python 3.10 环境下依赖解析只能拿到
+  `keras==3.12.4`（受 GHSA 安全公告影响，< 3.15.0 均存在漏洞），3.11+ 才能解析到已修复的
+  `keras==3.15.1`；提交更新后的 `uv.lock`。
 - `pyproject.toml` 补充运行时缺失的 `typeguard` 依赖（`funkeras/layers/wrappers.py` 一直依赖
   它，但此前从未声明，未手动安装 `typeguard` 时 `import funkeras` 会报
   `ModuleNotFoundError`），并为 `tensorflow`/`numpy`/`scipy`/`opencv-python`/`pillow`/`tqdm`/
