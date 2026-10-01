@@ -1,4 +1,6 @@
 from collections import Counter
+from collections.abc import Callable, Iterable
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -10,7 +12,16 @@ pd.set_option('display.max_rows', 200)
 pd.set_option('max_colwidth', 500)
 
 
-def agg_set(size: int = -1, padding: bool = False):
+def agg_set(size: int = -1, padding: bool = False) -> Callable[[Iterable[Any]], list[Any]]:
+    """创建将聚合值去重并可选截断、补齐的函数。
+
+    参数:
+        size: 最大返回长度；小于等于 0 时不限制长度。
+        padding: 长度不足 ``size`` 时是否用字符串 ``"0"`` 补齐。
+
+    返回:
+        接收可迭代对象并返回去重值列表的聚合函数。
+    """
     def inner(x):
         if size <= 0:
             return list(set(x))
@@ -23,7 +34,16 @@ def agg_set(size: int = -1, padding: bool = False):
     return inner
 
 
-def agg_list(size: int = -1, padding: bool = False):
+def agg_list(size: int = -1, padding: bool = False) -> Callable[[Iterable[Any]], list[Any]]:
+    """创建将聚合值转换为列表并可选截断、补齐的函数。
+
+    参数:
+        size: 最大返回长度；小于等于 0 时不限制长度。
+        padding: 长度不足 ``size`` 时是否用字符串 ``"0"`` 补齐。
+
+    返回:
+        接收可迭代对象并返回列表的聚合函数。
+    """
     # def inner(x):
     #     if size <= 0:
     #         return list(x)

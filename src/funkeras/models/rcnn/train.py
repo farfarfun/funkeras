@@ -62,16 +62,16 @@ def get_data():
 
 def show_anchor(data_gen_train):
     X, Y, image_data, debug_img, debug_num_pos = next(data_gen_train)
-    print('Original image: height=%d width=%d' % (image_data['height'], image_data['width']))
-    print('Resized image:  height=%d width=%d C.im_size=%d' % (X.shape[1], X.shape[2], cfg.im_size))
-    print('Feature map size: height=%d width=%d C.rpn_stride=%d' % (Y[0].shape[1], Y[0].shape[2], cfg.rpn_stride))
-    print(X.shape)
-    print(str(len(Y)) + " includes 'y_rpn_cls' and 'y_rpn_regr'")
-    print('Shape of y_rpn_cls {}'.format(Y[0].shape))
-    print('Shape of y_rpn_regr {}'.format(Y[1].shape))
-    print(image_data)
+    logger.info('Original image: height=%d width=%d' % (image_data['height'], image_data['width']))
+    logger.info('Resized image:  height=%d width=%d C.im_size=%d' % (X.shape[1], X.shape[2], cfg.im_size))
+    logger.info('Feature map size: height=%d width=%d C.rpn_stride=%d' % (Y[0].shape[1], Y[0].shape[2], cfg.rpn_stride))
+    logger.info(X.shape)
+    logger.info(str(len(Y)) + " includes 'y_rpn_cls' and 'y_rpn_regr'")
+    logger.info('Shape of y_rpn_cls {}'.format(Y[0].shape))
+    logger.info('Shape of y_rpn_regr {}'.format(Y[1].shape))
+    logger.info(image_data)
 
-    print('Number of positive anchors for this image: %d' % (debug_num_pos))
+    logger.info('Number of positive anchors for this image: %d' % (debug_num_pos))
     if debug_num_pos == 0:
         gt_x1, gt_x2 = image_data['bboxes'][0]['x1'] * (X.shape[2] / image_data['height']), image_data['bboxes'][0][
             'x2'] * (X.shape[2] / image_data['height'])
@@ -92,12 +92,12 @@ def show_anchor(data_gen_train):
     else:
         cls = Y[0][0]
         pos_cls = np.where(cls == 1)
-        print(pos_cls)
+        logger.info(pos_cls)
         regr = Y[1][0]
         pos_regr = np.where(regr == 1)
-        print(pos_regr)
-        print('y_rpn_cls for possible pos anchor: {}'.format(cls[pos_cls[0][0], pos_cls[1][0], :]))
-        print('y_rpn_regr for positive anchor: {}'.format(regr[pos_regr[0][0], pos_regr[1][0], :]))
+        logger.info(pos_regr)
+        logger.info('y_rpn_cls for possible pos anchor: {}'.format(cls[pos_cls[0][0], pos_cls[1][0], :]))
+        logger.info('y_rpn_regr for positive anchor: {}'.format(regr[pos_regr[0][0], pos_regr[1][0], :]))
 
         gt_x1, gt_x2 = image_data['bboxes'][0]['x1'] * (X.shape[2] / image_data['width']), image_data['bboxes'][0][
             'x2'] * (X.shape[2] / image_data['width'])
@@ -131,14 +131,14 @@ def show_anchor(data_gen_train):
             anchor_ratio = cfg.anchor_box_ratios[2 - int((idx + 1) % 3)]
 
             center = (pos_regr[1][i * 4] * cfg.rpn_stride, pos_regr[0][i * 4] * cfg.rpn_stride)
-            print('Center position of positive anchor: ', center)
+            logger.info(f'Center position of positive anchor: {center}')
             cv2.circle(img, center, 3, color, -1)
             anc_w, anc_h = anchor_size * anchor_ratio[0], anchor_size * anchor_ratio[1]
             cv2.rectangle(img, (center[0] - int(anc_w / 2), center[1] - int(anc_h / 2)),
                           (center[0] + int(anc_w / 2), center[1] + int(anc_h / 2)), color, 2)
     #         cv2.putText(img, 'pos anchor bbox '+str(i+1), (center[0]-int(anc_w/2), center[1]-int(anc_h/2)-5), cv2.FONT_HERSHEY_DUPLEX, 0.5, color, 1)
 
-    print('Green bboxes is ground-truth bbox. Others are positive anchors')
+    logger.info('Green bboxes is ground-truth bbox. Others are positive anchors')
     plt.figure(figsize=(8, 8))
     plt.grid()
     plt.imshow(img)
@@ -196,7 +196,7 @@ def train(network):
     for epoch_num in range(num_epochs):
 
         progbar = generic_utils.Progbar(epoch_length)
-        print('Epoch {}/{}'.format(r_epochs + 1, total_epochs))
+        logger.info('Epoch {}/{}'.format(r_epochs + 1, total_epochs))
 
         r_epochs += 1
 
@@ -206,7 +206,7 @@ def train(network):
                     mean_overlapping_bboxes = float(sum(rpn_accuracy_rpn_monitor)) / len(rpn_accuracy_rpn_monitor)
                     rpn_accuracy_rpn_monitor = []
                     if mean_overlapping_bboxes == 0:
-                        print(
+                        logger.warning(
                             'RPN is not producing bounding boxes that overlap the ground truth boxes. Check RPN settings or keep training.')
 
                 # Generate X (x_img) and label Y ([y_rpn_cls, y_rpn_regr])
@@ -299,15 +299,15 @@ def train(network):
                     rpn_accuracy_for_epoch = []
 
                     if cfg.verbose:
-                        print('Mean number of bounding boxes from RPN overlapping ground truth boxes: {}'.format(
+                        logger.info('Mean number of bounding boxes from RPN overlapping ground truth boxes: {}'.format(
                             mean_overlapping_bboxes))
-                        print('Classifier accuracy for bounding boxes from RPN: {}'.format(class_acc))
-                        print('Loss RPN classifier: {}'.format(loss_rpn_cls))
-                        print('Loss RPN regression: {}'.format(loss_rpn_regr))
-                        print('Loss Detector classifier: {}'.format(loss_class_cls))
-                        print('Loss Detector regression: {}'.format(loss_class_regr))
-                        print('Total loss: {}'.format(loss_rpn_cls + loss_rpn_regr + loss_class_cls + loss_class_regr))
-                        print('Elapsed time: {}'.format(time.time() - start_time))
+                        logger.info('Classifier accuracy for bounding boxes from RPN: {}'.format(class_acc))
+                        logger.info('Loss RPN classifier: {}'.format(loss_rpn_cls))
+                        logger.info('Loss RPN regression: {}'.format(loss_rpn_regr))
+                        logger.info('Loss Detector classifier: {}'.format(loss_class_cls))
+                        logger.info('Loss Detector regression: {}'.format(loss_class_regr))
+                        logger.info('Total loss: {}'.format(loss_rpn_cls + loss_rpn_regr + loss_class_cls + loss_class_regr))
+                        logger.info('Elapsed time: {}'.format(time.time() - start_time))
 
                     curr_loss = loss_rpn_cls + loss_rpn_regr + loss_class_cls + loss_class_regr
                     iter_num = 0
@@ -315,7 +315,7 @@ def train(network):
 
                     if curr_loss < best_loss:
                         if cfg.verbose:
-                            print('Total loss decreased from {} to {}, saving weights'.format(best_loss, curr_loss))
+                            logger.info('Total loss decreased from {} to {}, saving weights'.format(best_loss, curr_loss))
                         best_loss = curr_loss
                         model_all.save_weights(cfg.model_path)
 
@@ -325,7 +325,7 @@ def train(network):
                 logger.exception(f"训练迭代 iter_num={iter_num} 失败，跳过本次迭代继续训练")
                 continue
 
-    print('Training complete, exiting.')
+    logger.info('Training complete, exiting.')
 
 
 if __name__ == '__main__':

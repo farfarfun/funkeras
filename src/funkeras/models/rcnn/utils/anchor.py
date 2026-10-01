@@ -78,6 +78,8 @@ def get_anchor_gt(all_img_data, C, img_length_calc_function, mode='train'):
 
                 yield np.copy(x_img), [np.copy(y_rpn_cls), np.copy(y_rpn_regr)], img_data_aug, debug_img, num_pos
 
-            except Exception as e:
-                print(e)
+            except Exception:
+                logger.exception(
+                    f"生成 RPN anchor 失败，跳过该样本：{img_data.get('filepath', img_data)}"
+                )
                 continue

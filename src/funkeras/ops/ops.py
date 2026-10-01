@@ -196,7 +196,18 @@ def disjoint_adjacency_to_batch(A, I):
 
 
 def autodetect_mode(x: Any, a: Any) -> int:
-    """根据节点特征和邻接矩阵维度返回数据模式常量。"""
+    """根据节点特征和邻接矩阵维度返回数据模式常量。
+
+    参数:
+        x: 节点特征张量，秩应为 2 或 3。
+        a: 邻接矩阵张量，秩应为 2 或 3。
+
+    返回:
+        与输入秩组合对应的 ``SINGLE``、``BATCH`` 或 ``MIXED`` 模式常量。
+
+    异常:
+        ValueError: 输入秩不属于支持的组合。
+    """
     x_ndim = K.ndim(x)
     a_ndim = K.ndim(a)
     if x_ndim == 2 and a_ndim == 2:

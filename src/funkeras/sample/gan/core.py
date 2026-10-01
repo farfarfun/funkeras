@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy
 import tensorflow.keras.backend as K
+from farlog import getLogger
 from tensorflow.keras.datasets import cifar10, mnist
 from tensorflow.keras.layers import BatchNormalization, Activation
 from tensorflow.keras.layers import Concatenate
@@ -17,6 +18,8 @@ from tensorflow.python.keras.layers import merge
 from tensorflow_core.python.keras.optimizers import RMSprop
 
 from funkeras.backend import plot_model
+
+logger = getLogger("funkeras")
 
 
 def build_generator(img_shape, latent_dim):
@@ -169,7 +172,7 @@ class GAN(BaseGAN):
             g_loss = self.combined.train_on_batch(noise, valid)
 
             # Plot the progress
-            print("%d [D loss: %f, acc.: %.2f%%] [G loss: %f]" % (epoch, d_loss[0], 100 * d_loss[1], g_loss))
+            logger.info("%d [D loss: %f, acc.: %.2f%%] [G loss: %f]" % (epoch, d_loss[0], 100 * d_loss[1], g_loss))
 
             # If at save interval => save generated image samples
             if epoch % sample_interval == 0:
@@ -327,7 +330,7 @@ class ACGAN(BaseGAN):
             g_loss = self.combined.train_on_batch([noise, sampled_labels], [valid, sampled_labels])
 
             # Plot the progress
-            print("%d [D loss: %f, acc.: %.2f%%, op_acc: %.2f%%] [G loss: %f]" % (
+            logger.info("%d [D loss: %f, acc.: %.2f%%, op_acc: %.2f%%] [G loss: %f]" % (
                 epoch, d_loss[0], 100 * d_loss[3], 100 * d_loss[4], g_loss[0]))
 
             # If at save interval => save generated image samples
@@ -480,7 +483,7 @@ class BGAN(BaseGAN):
             g_loss = self.combined.train_on_batch(noise, valid)
 
             # Plot the progress
-            print("%d [D loss: %f, acc.: %.2f%%] [G loss: %f]" % (epoch, d_loss[0], 100 * d_loss[1], g_loss))
+            logger.info("%d [D loss: %f, acc.: %.2f%%] [G loss: %f]" % (epoch, d_loss[0], 100 * d_loss[1], g_loss))
 
             # If at save interval => save generated image samples
             if epoch % sample_interval == 0:
@@ -633,7 +636,7 @@ class AdversarialAutoEncoder:
             g_loss = self.adversarial_autoencoder.train_on_batch(imgs, [imgs, valid])
 
             # Plot the progress
-            print("%d [D loss: %f, acc: %.2f%%] [G loss: %f, mse: %f]" % (
+            logger.info("%d [D loss: %f, acc: %.2f%%] [G loss: %f, mse: %f]" % (
                 epoch, d_loss[0], 100 * d_loss[1], g_loss[0], g_loss[1]))
 
             # If at save interval => save generated image samples
@@ -808,7 +811,7 @@ class BIGAN():
             g_loss = self.bigan_generator.train_on_batch([z, imgs], [valid, fake])
 
             # Plot the progress
-            print("%d [D loss: %f, acc: %.2f%%] [G loss: %f]" % (epoch, d_loss[0], 100 * d_loss[1], g_loss[0]))
+            logger.info("%d [D loss: %f, acc: %.2f%%] [G loss: %f]" % (epoch, d_loss[0], 100 * d_loss[1], g_loss[0]))
 
             # If at save interval => save generated image samples
             if epoch % sample_interval == 0:
@@ -1006,7 +1009,7 @@ class CCGAN():
             g_loss = self.combined.train_on_batch(masked_imgs, valid)
 
             # Plot the progress
-            print("%d [D loss: %f, op_acc: %.2f%%] [G loss: %f]" % (epoch, d_loss[0], 100 * d_loss[4], g_loss))
+            logger.info("%d [D loss: %f, op_acc: %.2f%%] [G loss: %f]" % (epoch, d_loss[0], 100 * d_loss[4], g_loss))
 
             # If at save interval => save generated image samples
             if epoch % sample_interval == 0:
@@ -1194,7 +1197,7 @@ class CGAN():
             g_loss = self.combined.train_on_batch([noise, sampled_labels], valid)
 
             # Plot the progress
-            print("%d [D loss: %f, acc.: %.2f%%] [G loss: %f]" % (epoch, d_loss[0], 100 * d_loss[1], g_loss))
+            logger.info("%d [D loss: %f, acc.: %.2f%%] [G loss: %f]" % (epoch, d_loss[0], 100 * d_loss[1], g_loss))
 
             # If at save interval => save generated image samples
             if epoch % sample_interval == 0:
@@ -1371,7 +1374,7 @@ class COGAN():
             g_loss = self.combined.train_on_batch(noise, [valid, valid])
 
             # Plot the progress
-            print("%d [D1 loss: %f, acc.: %.2f%%] [D2 loss: %f, acc.: %.2f%%] [G loss: %f]" \
+            logger.info("%d [D1 loss: %f, acc.: %.2f%%] [D2 loss: %f, acc.: %.2f%%] [G loss: %f]" \
                   % (epoch, d1_loss[0], 100 * d1_loss[1], d2_loss[0], 100 * d2_loss[1], g_loss[0]))
 
             # If at save interval => save generated image samples
@@ -1563,7 +1566,7 @@ class ContextEncoder():
             g_loss = self.combined.train_on_batch(masked_imgs, [missing_parts, valid])
 
             # Plot the progress
-            print("%d [D loss: %f, acc: %.2f%%] [G loss: %f, mse: %f]" % (
+            logger.info("%d [D loss: %f, acc: %.2f%%] [G loss: %f, mse: %f]" % (
                 epoch, d_loss[0], 100 * d_loss[1], g_loss[0], g_loss[1]))
 
             # If at save interval => save generated image samples
@@ -1739,7 +1742,7 @@ class DCGAN():
             g_loss = self.combined.train_on_batch(noise, valid)
 
             # Plot the progress
-            print("%d [D loss: %f, acc.: %.2f%%] [G loss: %f]" % (epoch, d_loss[0], 100 * d_loss[1], g_loss))
+            logger.info("%d [D loss: %f, acc.: %.2f%%] [G loss: %f]" % (epoch, d_loss[0], 100 * d_loss[1], g_loss))
 
             # If at save interval => save generated image samples
             if epoch % save_interval == 0:
@@ -1929,7 +1932,7 @@ class DUALGAN():
             g_loss = self.combined.train_on_batch([imgs_A, imgs_B], [valid, valid, imgs_A, imgs_B])
 
             # Plot the progress
-            print("%d [D1 loss: %f] [D2 loss: %f] [G loss: %f]" \
+            logger.info("%d [D1 loss: %f] [D2 loss: %f] [G loss: %f]" \
                   % (epoch, D_A_loss[0], D_B_loss[0], g_loss[0]))
 
             # If at save interval => save generated image samples
@@ -2131,7 +2134,7 @@ class INFOGAN():
             g_loss = self.combined.train_on_batch(gen_input, [valid, sampled_labels])
 
             # Plot the progress
-            print("%d [D loss: %.2f, acc.: %.2f%%] [Q loss: %.2f] [G loss: %.2f]" % (
+            logger.info("%d [D loss: %.2f, acc.: %.2f%%] [Q loss: %.2f] [G loss: %.2f]" % (
                 epoch, d_loss[0], 100 * d_loss[1], g_loss[1], g_loss[2]))
 
             # If at save interval => save generated image samples
@@ -2286,7 +2289,7 @@ class LSGAN():
             g_loss = self.combined.train_on_batch(noise, valid)
 
             # Plot the progress
-            print("%d [D loss: %f, acc.: %.2f%%] [G loss: %f]" % (epoch, d_loss[0], 100 * d_loss[1], g_loss))
+            logger.info("%d [D loss: %f, acc.: %.2f%%] [G loss: %f]" % (epoch, d_loss[0], 100 * d_loss[1], g_loss))
 
             # If at save interval => save generated image samples
             if epoch % sample_interval == 0:
@@ -2458,7 +2461,7 @@ class SGAN:
             g_loss = self.combined.train_on_batch(noise, valid, class_weight=[cw1, cw2])
 
             # Plot the progress
-            print("%d [D loss: %f, acc: %.2f%%, op_acc: %.2f%%] [G loss: %f]" % (
+            logger.info("%d [D loss: %f, acc: %.2f%%, op_acc: %.2f%%] [G loss: %f]" % (
                 epoch, d_loss[0], 100 * d_loss[3], 100 * d_loss[4], g_loss))
 
             # If at save interval => save generated image samples
@@ -2643,7 +2646,7 @@ class WGAN():
             g_loss = self.combined.train_on_batch(noise, valid)
 
             # Plot the progress
-            print("%d [D loss: %f] [G loss: %f]" % (epoch, 1 - d_loss[0], 1 - g_loss[0]))
+            logger.info("%d [D loss: %f] [G loss: %f]" % (epoch, 1 - d_loss[0], 1 - g_loss[0]))
 
             # If at save interval => save generated image samples
             if epoch % sample_interval == 0:
