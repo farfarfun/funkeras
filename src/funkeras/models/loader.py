@@ -5,6 +5,8 @@ import json
 import os
 import shutil
 from collections import namedtuple
+from collections.abc import Callable
+from typing import Any
 
 import numpy as np
 import tensorflow as tf
@@ -46,11 +48,17 @@ class PreTrainedList(object):
     )
 
 
-def get_pre_trained_path(info=PreTrainedList.chinese_wwm_base):
-    """
-    获取模型路径
-    :param info:模型路径
-    :return:
+def get_pre_trained_path(
+    info: PreTrainedInfo | str = PreTrainedList.chinese_wwm_base,
+) -> str:
+    """下载（如未缓存）并返回预训练模型的本地解压目录。
+
+    参数:
+        info: 预训练模型描述，可以是 ``PreTrainedInfo`` 具名元组，也可以直接是
+            模型压缩包的下载地址字符串。
+
+    返回:
+        预训练模型解压后所在的本地目录路径。
     """
     path = info
     if isinstance(info, PreTrainedInfo):
@@ -67,18 +75,31 @@ def get_pre_trained_path(info=PreTrainedList.chinese_wwm_base):
     return os.path.join(base_part, file_part)
 
 
-def get_checkpoint_paths(model_path):
+def get_checkpoint_paths(model_path: str) -> CheckpointPaths:
+    """根据模型目录拼出 BERT checkpoint 的标准三件套路径。
+
+    参数:
+        model_path: 预训练模型所在目录。
+
+    返回:
+        包含 ``config``/``checkpoint``/``vocab`` 三个路径的具名元组。
+    """
     config_path = os.path.join(model_path, 'bert_config.json')
     checkpoint_path = os.path.join(model_path, 'bert_model.ckpt')
     vocab_path = os.path.join(model_path, 'vocab.txt')
     return CheckpointPaths(config_path, checkpoint_path, vocab_path)
 
 
-def get_checkpoint_config(info=PreTrainedList.chinese_wwm_base):
-    """
-    获取模型路径配置信息
-    :param info:模型路径
-    :return:
+def get_checkpoint_config(
+    info: PreTrainedInfo | str = PreTrainedList.chinese_wwm_base,
+) -> CheckpointPaths:
+    """下载（如未缓存）预训练模型并返回其 checkpoint 路径配置。
+
+    参数:
+        info: 预训练模型描述，语义同 :func:`get_pre_trained_path`。
+
+    返回:
+        包含 ``config``/``checkpoint``/``vocab`` 三个路径的具名元组。
     """
     path = info
     if isinstance(info, PreTrainedInfo):
@@ -100,19 +121,28 @@ def get_checkpoint_config(info=PreTrainedList.chinese_wwm_base):
     return CheckpointPaths(config_path, checkpoint_path, vocab_path)
 
 
-def build_model_from_config(config_file, training=False, trainable=None, output_layer_num=1, seq_len=int(1e9),
-                            **kwargs):
-    """Build the model from config file.
+def build_model_from_config(
+    config_file: str,
+    training: bool = False,
+    trainable: bool | None = None,
+    output_layer_num: int = 1,
+    seq_len: int | None = int(1e9),
+    **kwargs: Any,
+) -> tuple[Any, dict[str, Any]]:
+    """根据 BERT 配置文件构建模型。
 
-    :param config_file: The path to the JSON configuration file.
-    :param training: If training, the whole model will be returned.
-                     Otherwise, the MLM and NSP parts will be ignored.
-    :param trainable: Whether the model is trainable.
-    :param output_layer_num: The number of layers whose outputs will be concatenated as a single output.
-                             Only available when `training` is `False`.
-    :param seq_len: If it is not None and it is shorter than the value in the config file, the weights in
-                    position embeddings will be sliced to fit the new length.
-    :return: model and config
+    参数:
+        config_file: JSON 配置文件路径。
+        training: 是否用于训练；为 ``True`` 时返回完整模型（含 MLM/NSP 头），
+            否则只返回主干模型。
+        trainable: 模型权重是否可训练，默认与 ``training`` 一致。
+        output_layer_num: 取最后多少层输出做拼接，仅在 ``training=False`` 时生效。
+        seq_len: 若小于配置文件中的位置编码长度，会据此截断位置编码权重；传
+            ``None`` 表示不做截断。
+        **kwargs: 透传给 :func:`funkeras.models.bert.get_model` 的额外参数。
+
+    返回:
+        ``(model, config)`` 二元组：构建好的 Keras 模型与解析后的配置字典。
     """
     with open(config_file, 'r') as reader:
         config = json.loads(reader.read())
@@ -138,17 +168,19 @@ def build_model_from_config(config_file, training=False, trainable=None, output_
     return model, config
 
 
-def load_model_weights_from_checkpoint(model, config, checkpoint_file, training=False):
-    """
-    从checkpoint中加载官方的模型
-    Load trained official model from checkpoint.
+def load_model_weights_from_checkpoint(
+    model: Any,
+    config: dict[str, Any],
+    checkpoint_file: str,
+    training: bool = False,
+) -> None:
+    """从官方 checkpoint 文件中加载权重到已构建好的模型。
 
-    :param model: Built keras model.
-    :param config: 配置文件路径 Loaded configuration file.
-    :param checkpoint_file:必须以.ckpt结尾的checkpoint文件路径 The path to the checkpoint files, should end with '.ckpt'.
-    :param training: 如果需要训练，会返回整个模型
-                    If training, the whole model will be returned.
-                    Otherwise, the MLM and NSP parts will be ignored.
+    参数:
+        model: 已通过 :func:`build_model_from_config` 构建好的 Keras 模型。
+        config: 对应的配置字典（需包含 ``num_hidden_layers`` 等字段）。
+        checkpoint_file: checkpoint 文件路径，须以 ``.ckpt`` 结尾。
+        training: 为 ``True`` 时额外加载 MLM/NSP 头的权重，否则只加载主干权重。
     """
     loader = checkpoint_loader(checkpoint_file)
 
@@ -168,7 +200,7 @@ def load_model_weights_from_checkpoint(model, config, checkpoint_file, training=
     for i in range(config['num_hidden_layers']):
         try:
             model.get_layer(name='Encoder-%d-MultiHeadSelfAttention' % (i + 1))
-        except ValueError as e:
+        except ValueError:
             continue
         model.get_layer(name='Encoder-%d-MultiHeadSelfAttention' % (i + 1)).set_weights([
             loader('bert/encoder/layer_%d/attention/self/query/kernel' % i),
@@ -216,20 +248,28 @@ def load_model_weights_from_checkpoint(model, config, checkpoint_file, training=
         ])
 
 
-def load_trained_model_from_checkpoint(config_file, checkpoint_file, training=False, trainable=None,
-                                       output_layer_num=1, seq_len=int(1e9), **kwargs):
-    """Load trained official model from checkpoint.
+def load_trained_model_from_checkpoint(
+    config_file: str,
+    checkpoint_file: str,
+    training: bool = False,
+    trainable: bool | None = None,
+    output_layer_num: int = 1,
+    seq_len: int | None = int(1e9),
+    **kwargs: Any,
+) -> Any:
+    """根据配置文件构建模型并从 checkpoint 加载权重，一步到位。
 
-    :param config_file: The path to the JSON configuration file.
-    :param checkpoint_file: checkpoint_file.
-    :param training: If training, the whole model will be returned.
-                     Otherwise, the MLM and NSP parts will be ignored.
-    :param trainable: Whether the model is trainable. The default value is the same with `training`.
-    :param output_layer_num: The number of layers whose outputs will be concatenated as a single output.
-                             Only available when `training` is `False`.
-    :param seq_len: If it is not None and it is shorter than the value in the config file, the weights in
-                    position embeddings will be sliced to fit the new length.
-    :return: model
+    参数:
+        config_file: JSON 配置文件路径。
+        checkpoint_file: checkpoint 文件路径，须以 ``.ckpt`` 结尾。
+        training: 是否用于训练；为 ``True`` 时返回完整模型。
+        trainable: 模型权重是否可训练，默认与 ``training`` 一致。
+        output_layer_num: 取最后多少层输出做拼接，仅在 ``training=False`` 时生效。
+        seq_len: 若小于配置文件中的位置编码长度，会据此截断位置编码权重。
+        **kwargs: 透传给 :func:`build_model_from_config` 的额外参数。
+
+    返回:
+        加载好权重的 Keras 模型。
     """
     # model_path = get_pre_trained_path(model_info)
     # paths = get_checkpoint_paths(model_path)
@@ -245,7 +285,15 @@ def load_trained_model_from_checkpoint(config_file, checkpoint_file, training=Fa
     return model
 
 
-def load_vocabulary(vocab_path):
+def load_vocabulary(vocab_path: str) -> dict[str, int]:
+    """加载 BERT 词表文件，构建 token 到 id 的映射。
+
+    参数:
+        vocab_path: 词表文件路径，每行一个 token。
+
+    返回:
+        token 到自增 id 的映射字典（id 即 token 在文件中的行号，从 0 开始）。
+    """
     token_dict = {}
     with codecs.open(vocab_path, 'r', 'utf8') as reader:
         for line in reader:
@@ -254,14 +302,17 @@ def load_vocabulary(vocab_path):
     return token_dict
 
 
-def checkpoint_loader(checkpoint_file):
-    """
-    从checkpoint加载变量
-    :param checkpoint_file: 模型文件
-    :return:
+def checkpoint_loader(checkpoint_file: str) -> Callable[[str], Any]:
+    """返回一个按变量名从 checkpoint 读取权重的加载函数。
+
+    参数:
+        checkpoint_file: checkpoint 文件路径。
+
+    返回:
+        接收变量名、返回对应权重数组的可调用对象。
     """
 
-    def _loader(name):
+    def _loader(name: str) -> Any:
         return tf.train.load_variable(checkpoint_file, name)
 
     return _loader

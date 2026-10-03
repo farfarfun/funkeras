@@ -1,16 +1,19 @@
 import os
 import shutil
+from pathlib import Path
 
 import numpy as np
 import tensorflow as tf
 
-from funkeras.model.yolo4.core import utils
-from funkeras.model.yolo4.core.config import cfg
-from funkeras.model.yolo4.core.dataset import Dataset
-from funkeras.model.yolo4.core.utils import freeze_all, unfreeze_all
-from funkeras.model.yolo4.core.yolov4 import YOLO, compute_loss, decode_train
+from funkeras.models.yolo4.core import utils
+from funkeras.models.yolo4.core.config import cfg
+from funkeras.models.yolo4.core.dataset import Dataset
+from funkeras.models.yolo4.core.utils import freeze_all, unfreeze_all
+from funkeras.models.yolo4.core.yolov4 import YOLO, compute_loss, decode_train
 
-data_root = '/Users/liangtaoniu/workspace/MyDiary/notechats/notekeras/example/yolo4'
+# 与 funkeras.models.yolo4.core.config 保持一致，用同一个环境变量覆盖数据/权重根目录，
+# 默认落在用户缓存目录而不是作者本机路径。
+data_root = os.environ.get("FUNKERAS_YOLO_ROOT", str(Path.home() / ".cache/funkeras/yolo4"))
 
 
 def main(tiny=False, model='yolov4', weights=data_root + '/data/yolov4.weights'):

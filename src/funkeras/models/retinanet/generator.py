@@ -6,6 +6,7 @@ import sys
 from collections import OrderedDict
 
 import numpy as np
+from farlog import getLogger
 from PIL import Image
 from six import raise_from
 from tensorflow.keras import backend as K
@@ -18,6 +19,8 @@ from funkeras.models.retinanet.utils.image import apply_transform, preprocess_im
 from funkeras.models.retinanet.utils.image import read_image_bgr
 from funkeras.models.retinanet.utils.transform import transform_aabb
 from funkeras.utils import read_lines
+
+logger = getLogger("funkeras")
 
 
 class Generator(Sequence):
@@ -682,7 +685,7 @@ class TextGenerator(Generator):
                 x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
                 class_name = self.class_names[int(class_name)]
                 result[img_file].append({'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2, 'class': class_name})
-        print('read annotations done')
+        logger.info('read annotations done')
         return result
 
     @staticmethod

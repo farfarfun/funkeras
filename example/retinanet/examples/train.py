@@ -3,12 +3,12 @@ import os
 from tensorflow import keras
 from tensorflow.keras.callbacks import TensorBoard, ReduceLROnPlateau
 
-from funkeras.model.retinanet import models
-from funkeras.model.retinanet.generator import TextGenerator
-from funkeras.model.retinanet.losses import smooth_l1, focal
-from funkeras.model.retinanet.models.retinanet import RetinaNetBox
-from funkeras.model.retinanet.utils.image import random_visual_effect_generator
-from funkeras.model.retinanet.utils.transform import random_transform_generator
+from funkeras.models.retinanet import models
+from funkeras.models.retinanet.generator import TextGenerator
+from funkeras.models.retinanet.losses import smooth_l1, focal
+from funkeras.models.retinanet.models.retinanet import RetinaNetBox
+from funkeras.models.retinanet.utils.image import random_visual_effect_generator
+from funkeras.models.retinanet.utils.transform import random_transform_generator
 from funkeras.utils.model import freeze
 
 
@@ -148,6 +148,13 @@ def train(batch_size=32, backbone='resnet50', annotations=None, classes=None):
 
 
 if __name__ == '__main__':
-    annotations = '/Users/liangtaoniu/workspace/MyDiary/src/tianchi/live/data/train/image_item_train.txt'
-    classes = '/Users/liangtaoniu/workspace/MyDiary/src/tianchi/live/data/classes/coco.names'
+    # 标注/类别文件因人而异，没有可移植的默认值，统一通过环境变量传入，
+    # 不再硬编码作者本机路径。
+    annotations = os.environ.get("FUNKERAS_RETINANET_ANNOTATIONS")
+    classes = os.environ.get("FUNKERAS_RETINANET_CLASSES")
+    if not annotations or not classes:
+        raise SystemExit(
+            "请通过环境变量 FUNKERAS_RETINANET_ANNOTATIONS / "
+            "FUNKERAS_RETINANET_CLASSES 指定标注文件和类别文件路径后再运行本示例。"
+        )
     train(annotations=annotations, classes=classes, batch_size=4)

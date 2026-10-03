@@ -6,19 +6,14 @@ import tensorflow as tf
 from PIL import Image
 
 from fundrive.lanzou import LanZouCloud, CodeDetail, download
-import funkeras.model.yolo4.core.utils as utils
+import funkeras.models.yolo4.core.utils as utils
 from funkeras.backend import plot_model
-from funkeras.model.yolo4.core.yolov4 import YOLO, decode
-from funkeras.model.yolo4.core.yolov4 import filter_boxes
+from funkeras.models.yolo4.core.yolov4 import YOLO, decode
+from funkeras.models.yolo4.core.yolov4 import filter_boxes
 
-data_root = "/root/workspace/notechats/notekeras/example/yolo/"
-
-# yolov4.weights
-download("https://wws.lanzous.com/b01hjn3yd", dir_pwd=data_root + "/models/")
-# yolov4-416.h5
-# download('https://wws.lanzous.com/b01hl9lej', dir_pwd=data_root + '/models/')
-
-classes = utils.read_class_names(data_root + "/data/classes/coco.names")
+# 数据/权重根目录因人而异，没有可移植的默认值，统一通过环境变量传入，
+# 避免在模块导入阶段就依赖作者本机路径并发起网络下载。
+data_root = os.environ.get("FUNKERAS_YOLOV4_ROOT", os.path.join(os.getcwd(), "example", "yolo") + "/")
 
 
 def save_tf(
@@ -107,4 +102,10 @@ def detect(
     cv2.imwrite(output, image)
 
 
-detect()
+if __name__ == "__main__":
+    # yolov4.weights
+    download("https://wws.lanzous.com/b01hjn3yd", dir_pwd=data_root + "/models/")
+    # yolov4-416.h5
+    # download('https://wws.lanzous.com/b01hl9lej', dir_pwd=data_root + '/models/')
+    classes = utils.read_class_names(data_root + "/data/classes/coco.names")
+    detect()

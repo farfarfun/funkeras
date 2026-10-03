@@ -9,6 +9,7 @@ from functools import partial
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow.keras.backend as K
+from farlog import getLogger
 from tensorflow.keras.datasets import mnist
 from tensorflow.keras.layers import BatchNormalization, Activation, ZeroPadding2D
 from tensorflow.keras.layers import Input, Dense, Reshape, Flatten, Dropout
@@ -17,6 +18,8 @@ from tensorflow.keras.layers import UpSampling2D, Conv2D
 from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.optimizers import RMSprop
 from tensorflow.python.keras.layers.merge import _Merge
+
+logger = getLogger("funkeras")
 
 
 class RandomWeightedAverage(_Merge):
@@ -210,7 +213,7 @@ class WGANGP():
             g_loss = self.generator_model.train_on_batch(noise, valid)
 
             # Plot the progress
-            print("%d [D loss: %f] [G loss: %f]" % (epoch, d_loss[0], g_loss))
+            logger.info("%d [D loss: %f] [G loss: %f]" % (epoch, d_loss[0], g_loss))
 
             # If at save interval => save generated image samples
             if epoch % sample_interval == 0:

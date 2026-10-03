@@ -1,33 +1,32 @@
+import os
 import pickle
 
 import numpy as np
+from farlog import getLogger
 from tqdm import tqdm
 
 from funkeras.backend import keras
-from funkeras.din.data_generator import DataInput, TestData
-from funkeras.din.model import din
+from funkeras.temp.din.data_generator import DataInput, TestData
+from funkeras.temp.din.model import din
+
+logger = getLogger("funkeras")
 
 Callback = keras.callbacks.Callback
 
-data_root = '/Users/liangtaoniu/workspace/MyDiary/tmp/dataset/electronics'
+# 没有可移植的默认值（依赖本地预处理好的电商数据集），通过环境变量传入，
+# 避免在 import 阶段就依赖作者本机路径；默认值仅用于提示。
+data_root = os.environ.get(
+    "FUNKERAS_DIN_DATA_ROOT", os.path.join(os.getcwd(), "data", "electronics")
+)
 
 batch_size = 64
 
-train_model, label_model = din(item_count=63001, cate_count=801, hidden_units=128)
-
-keras.utils.plot_model(train_model, 'model.png', show_shapes=True)
-
-with open('{}/raw_data/dataset.pkl'.format(data_root), 'rb') as f:
-    train_set = pickle.load(f)
-    test_set = pickle.load(f)
-    cate_list = pickle.load(f)
-    user_count, item_count, cate_count = pickle.load(f)
-
-print(1)
-train_D = DataInput(file="{}/paddle_train.txt".format(data_root), batch_size=batch_size)
-print(2)
-test_D = TestData(file="{}/paddle_test.txt".format(data_root))
-print(3)
+# 以下全局变量在 main() 中赋值，模块导入阶段不触发任何 I/O 或训练。
+train_model = None
+label_model = None
+train_D = None
+test_D = None
+evaluator = None
 
 
 # 定义sigmoid函数
@@ -69,10 +68,9 @@ class Evaluate(Callback):
         if acc > self.best_acc:
             self.best_acc = acc
             train_model.save_weights("./best_model.weight")
-        print('acc: %.4f, best acc: %.4f\n' % (acc, self.best_acc))
+        logger.info('acc: {:.4f}, best acc: {:.4f}'.format(acc, self.best_acc))
 
     def evaluate(self):
-        t_count = 0
         score = []  # 记录实际和预测的结果
         # 取一个batch*20的数据
         np.random.shuffle(test_D.test_set)
@@ -89,18 +87,42 @@ class Evaluate(Callback):
 
         # 计算AUC
         auc = calc_auc(score)
-        print("TEST --> auc: {}".format(auc))
+        logger.info("TEST --> auc: {}".format(auc))
         return auc
 
 
-# 定义
-evaluator = Evaluate()
+def main() -> None:
+    """构建 DIN 模型并在 ``data_root`` 指向的本地数据集上训练。
 
-# 定义ModelCheckpoint、EarlyStopping和TensorBoard
-# Using tensorboard callbacks
-# tb_callback = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=True, write_images=True)
+    数据集路径来自环境变量 ``FUNKERAS_DIN_DATA_ROOT``（未设置时默认为
+    ``<当前目录>/data/electronics``，该目录通常不存在，需要用户预先准备好
+    `din/README.md` 描述的电商数据集），不会在模块导入阶段触发任何 I/O。
+    """
+    global train_model, label_model, train_D, test_D, evaluator
 
-train_model.fit_generator(train_D.__iter__(),
-                          steps_per_epoch=len(train_D),
-                          callbacks=[evaluator],
-                          epochs=2)
+    train_model, label_model = din(item_count=63001, cate_count=801, hidden_units=128)
+    keras.utils.plot_model(train_model, 'model.png', show_shapes=True)
+
+    with open('{}/raw_data/dataset.pkl'.format(data_root), 'rb') as f:
+        pickle.load(f)  # train_set
+        pickle.load(f)  # test_set
+        pickle.load(f)  # cate_list
+        pickle.load(f)  # user_count, item_count, cate_count
+
+    train_D = DataInput(file="{}/paddle_train.txt".format(data_root), batch_size=batch_size)
+    test_D = TestData(file="{}/paddle_test.txt".format(data_root))
+
+    evaluator = Evaluate()
+
+    # 定义ModelCheckpoint、EarlyStopping和TensorBoard
+    # Using tensorboard callbacks
+    # tb_callback = keras.callbacks.TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=True, write_images=True)
+
+    train_model.fit_generator(train_D.__iter__(),
+                              steps_per_epoch=len(train_D),
+                              callbacks=[evaluator],
+                              epochs=2)
+
+
+if __name__ == "__main__":
+    main()

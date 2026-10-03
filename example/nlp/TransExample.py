@@ -1,7 +1,7 @@
 import numpy as np
 
 from funkeras.backend import plot_model
-from funkeras.model.transformer import TransformerModel
+from funkeras.models.transformer import TransformerModel
 from funkeras.tokenizer import get_base_dict, TOKEN_PAD, TOKEN_END, TOKEN_START
 
 tokens = 'all work and no play makes jack a dull boy'.split(' ')

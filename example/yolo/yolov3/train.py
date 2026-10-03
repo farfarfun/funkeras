@@ -1,14 +1,23 @@
+import os
+
 import numpy as np
 import tensorflow as tf
+from farlog import getLogger
 
-from funkeras.model.yolo3 import Dataset, YoloDataset
-from funkeras.model.yolo3 import YoloBody
+from funkeras.models.yolo3 import Dataset, YoloDataset
+from funkeras.models.yolo3 import YoloBody
 from funkeras.utils import read_lines
 
-root = '/Users/liangtaoniu/workspace/MyDiary/notechats/notekeras/example/yolo'
-classes = read_lines(root + "/data/classes/coco.names")
-annotation_path = root + "/data/dataset/yymnist_train.txt"
-tf.config.experimental_run_functions_eagerly(True)
+logger = getLogger("funkeras")
+
+# 数据/权重/日志根目录因人而异，没有可移植的默认值，统一通过环境变量传入，
+# 不再硬编码作者本机路径；模块导入阶段不读取任何本机文件。
+root = os.environ.get("FUNKERAS_YOLOV3_ROOT", os.path.join(os.getcwd(), "example", "yolo"))
+weights_path = os.environ.get(
+    "FUNKERAS_YOLOV3_WEIGHTS", os.path.join(root, "models", "yolov3.h5")
+)
+log_dir = os.environ.get("FUNKERAS_YOLOV3_LOG_DIR", os.path.join(root, "logs"))
+annotation_path = os.path.join(root, "data", "dataset", "yymnist_train.txt")
 
 
 def get_anchors():
@@ -18,37 +27,43 @@ def get_anchors():
     return np.array(anchor).reshape(-1, 2)
 
 
-anchors = get_anchors()
-yolo_body = YoloBody(anchors=anchors, num_classes=len(classes))
-yolo_body.debug()
-yolo_body.load_weights("/Users/liangtaoniu/workspace/MyDiary/tmp/models/yolo/configs/yolov3.h5", freeze_body=3)
+def main() -> None:
+    tf.config.experimental_run_functions_eagerly(True)
+    classes = read_lines(root + "/data/classes/coco.names")
 
-train_set2 = YoloDataset(annotation_path=annotation_path, anchors=anchors, classes=classes, batch_size=4)
-for item in train_set2.dataset_iterator:
-    print(len(item))
+    anchors = get_anchors()
+    yolo_body = YoloBody(anchors=anchors, num_classes=len(classes))
+    yolo_body.debug()
+    yolo_body.load_weights(weights_path, freeze_body=3)
 
-a = b
+    train_set2 = YoloDataset(annotation_path=annotation_path, anchors=anchors, classes=classes, batch_size=4)
+    for item in train_set2.dataset_iterator:
+        logger.info(len(item))
 
-train_set = Dataset(annotation_path=annotation_path, anchors=anchors, classes=classes, batch_size=4)
-log_dir = "/Users/liangtaoniu/workspace/MyDiary/tmp/models/yolo/log"
+    train_set = Dataset(annotation_path=annotation_path, anchors=anchors, classes=classes, batch_size=4)
 
-yolo_body.train(dataset=train_set, log_dir=log_dir)
+    yolo_body.train(dataset=train_set, log_dir=log_dir)
 
-model = yolo_body.train_model
-logging = tf.keras.callbacks.TensorBoard(log_dir=log_dir)
-# 只存储weights，
-checkpoint = tf.keras.callbacks.ModelCheckpoint(log_dir + 'ep{epoch:03d}-loss{loss:.3f}-val_loss{val_loss:.3f}.h5',
-                                                monitor='val_loss', save_weights_only=True,
-                                                save_best_only=True, period=3)
-# 当评价指标不在提升时，减少学习率
-reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=3,
-                                                 verbose=1)
-# 测试集准确率，下降前终止
-early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=0, patience=10,
-                                                  verbose=1)
+    model = yolo_body.train_model
+    tensorboard = tf.keras.callbacks.TensorBoard(log_dir=log_dir)
+    # 只存储weights，
+    checkpoint = tf.keras.callbacks.ModelCheckpoint(
+        log_dir + 'ep{epoch:03d}-loss{loss:.3f}-val_loss{val_loss:.3f}.h5',
+        monitor='val_loss', save_weights_only=True,
+        save_best_only=True, period=3)
+    # 当评价指标不在提升时，减少学习率
+    reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=3,
+                                                     verbose=1)
+    # 测试集准确率，下降前终止
+    early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=0, patience=10,
+                                                      verbose=1)
 
-model.compile(optimizer=tf.keras.optimizers.Adam(lr=1e-4), loss={'yolo_loss': lambda y_true0, y_pred: y_pred})
+    model.compile(optimizer=tf.keras.optimizers.Adam(lr=1e-4), loss={'yolo_loss': lambda y_true0, y_pred: y_pred})
 
-model.fit_generator(train_set.dataset_iterator,
-                    steps_per_epoch=train_set.steps_total,
-                    callbacks=[logging, checkpoint, reduce_lr, early_stopping])
+    model.fit_generator(train_set.dataset_iterator,
+                        steps_per_epoch=train_set.steps_total,
+                        callbacks=[tensorboard, checkpoint, reduce_lr, early_stopping])
+
+
+if __name__ == "__main__":
+    main()

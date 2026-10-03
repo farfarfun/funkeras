@@ -1,29 +1,30 @@
+from typing import Any, Callable
+
 import tensorflow as tf
 from tensorflow.keras import backend as K
 
 
-def focal(alpha=0.25, gamma=2.0):
-    """ Create a functor for computing the focal loss.
+def focal(alpha: float = 0.25, gamma: float = 2.0) -> Callable[[Any, Any], Any]:
+    """构造计算 Focal Loss 的损失函数（参见 https://arxiv.org/abs/1708.02002）。
 
-    Args
-        alpha: Scale the focal weight with alpha.
-        gamma: Take the power of the focal weight with gamma.
+    参数:
+        alpha: 正负样本的加权系数。
+        gamma: 难易样本的加权指数。
 
-    Returns
-        A functor that computes the focal loss using the alpha and gamma.
+    返回:
+        接收 ``(y_true, y_pred)`` 并返回 focal loss 标量张量的可调用对象。
     """
 
-    def _focal(y_true, y_pred):
-        """ Compute the focal loss given the target tensor and the predicted tensor.
+    def _focal(y_true: Any, y_pred: Any) -> Any:
+        """计算单个 batch 的 focal loss。
 
-        As defined in https://arxiv.org/abs/1708.02002
+        参数:
+            y_true: 形状 ``(B, N, num_classes + 1)`` 的目标张量，最后一维为
+                anchor 状态（-1 忽略，0 背景，1 目标）。
+            y_pred: 形状 ``(B, N, num_classes)`` 的网络预测张量。
 
-        Args
-            y_true: Tensor of target data from the generator with shape (B, N, num_classes).
-            y_pred: Tensor of predicted data from the network with shape (B, N, num_classes).
-
-        Returns
-            The focal loss of y_pred w.r.t. y_true.
+        返回:
+            对所有正样本 anchor 归一化后的 focal loss 标量。
         """
         labels = y_true[:, :, :-1]
         anchor_state = y_true[:, :, -1]  # -1 for ignore, 0 for background, 1 for object
@@ -52,26 +53,27 @@ def focal(alpha=0.25, gamma=2.0):
     return _focal
 
 
-def smooth_l1(sigma=3.0):
-    """ Create a smooth L1 loss functor.
+def smooth_l1(sigma: float = 3.0) -> Callable[[Any, Any], Any]:
+    """构造 Smooth L1 损失函数。
 
-    Args
-        sigma: This argument defines the point where the loss changes from L2 to L1.
+    参数:
+        sigma: 控制损失从 L2 切换到 L1 的分界点。
 
-    Returns
-        A functor for computing the smooth L1 loss given target data and predicted data.
+    返回:
+        接收 ``(y_true, y_pred)`` 并返回 smooth L1 loss 标量张量的可调用对象。
     """
     sigma_squared = sigma ** 2
 
-    def _smooth_l1(y_true, y_pred):
-        """ Compute the smooth L1 loss of y_pred w.r.t. y_true.
+    def _smooth_l1(y_true: Any, y_pred: Any) -> Any:
+        """计算单个 batch 的 smooth L1 loss。
 
-        Args
-            y_true: Tensor from the generator of shape (B, N, 5). The last value for each box is the state of the anchor (ignore, negative, positive).
-            y_pred: Tensor from the network of shape (B, N, 4).
+        参数:
+            y_true: 形状 ``(B, N, 5)`` 的目标张量，最后一维为 anchor 状态
+                （忽略/负样本/正样本）。
+            y_pred: 形状 ``(B, N, 4)`` 的网络回归预测张量。
 
-        Returns
-            The smooth L1 loss of y_pred w.r.t. y_true.
+        返回:
+            对所有正样本 anchor 归一化后的 smooth L1 loss 标量。
         """
         # separate target and state
         regression = y_pred

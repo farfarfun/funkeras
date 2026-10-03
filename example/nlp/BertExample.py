@@ -1,5 +1,5 @@
 from funkeras.backend import keras
-from funkeras.model.bert import get_model, BertModel, gen_batch_inputs
+from funkeras.models.bert import get_model, BertModel, gen_batch_inputs
 from funkeras.tokenizer import get_base_dict
 
 # 随便的输入样例：

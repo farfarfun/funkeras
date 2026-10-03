@@ -3,6 +3,7 @@ import os
 import cv2
 import numpy as np
 import tensorflow as tf
+from farlog import getLogger
 from PIL import Image
 from tensorflow.keras import backend as K
 from tensorflow.keras import optimizers
@@ -17,7 +18,8 @@ from tqdm import tqdm
 from funkeras.component.yolo.yolo3 import YoloModel
 from funkeras.utils.image import image_resize, postprocess_boxes, nms
 from funkeras.utils.image import read_image_batch
-from notemodel.database import load_layers
+
+logger = getLogger("funkeras")
 
 STRIDES = np.array([8, 16, 32])
 IOU_LOSS_THRESH = 0.5
@@ -133,7 +135,7 @@ class Dataset(object):
                 tf_example = tf.train.Example(features=features)
                 serialized = tf_example.SerializeToString()
                 writer.write(serialized)
-        print('tfrecord done.{}'.format(len(self.annotations)))
+        logger.info('tfrecord done.{}'.format(len(self.annotations)))
 
         def parse_fn(example_proto):
             features = {
@@ -948,21 +950,28 @@ class YoloBody:
         return result_boxs
 
     def load_layer_weights(self, freeze_body=2):
-        print("load weight")
+        try:
+            from notemodel.database import load_layers
+        except ImportError as exc:
+            raise ImportError(
+                "load_layer_weights 依赖可选包 notemodel（组织内未发布/未维护），"
+                "无法加载预置权重；请改用 load_weights(filepath) 从本地权重文件加载。"
+            ) from exc
+        logger.info("load weight")
         load_layers(self.yolo_model.layers, model_name='yolov3', md5_list=md5)
-        print("load weight done")
+        logger.info("load weight done")
 
     def load_weights(self, filepath, freeze_body=2):
 
         self.yolo_model.load_weights(filepath)
 
-        print('Load weights success {}.'.format(filepath))
+        logger.info('Load weights success {}.'.format(filepath))
 
         if freeze_body in [1, 2]:
             num = (20, len(self.yolo_model.layers) - 2)[freeze_body - 1]
             for i in range(num):
                 self.yolo_model.layers[i].trainable = False
-            print('Freeze the first {} layers of total {} layers.'.format(num, len(self.yolo_model.layers)))
+            logger.info('Freeze the first {} layers of total {} layers.'.format(num, len(self.yolo_model.layers)))
 
     def debug(self):
         plot_model(self.yolo_model, to_file=self.root + 'models/yolo-body.png', show_shapes=True)
@@ -975,7 +984,7 @@ class YoloBody:
     def yolo_eval(self, inputs, image_shape, max_boxes=20, score_threshold=.6, iou_threshold=.5):
         """Evaluate YOLO model on given input and return filtered boxes."""
         yolo_outputs = self.yolo_model.predict(inputs)
-        print(yolo_outputs[0][0][0][0][0])
+        logger.debug(yolo_outputs[0][0][0][0][0])
 
         num_layers = len(yolo_outputs)
 

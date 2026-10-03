@@ -1,17 +1,19 @@
+import os
 import time
 
 import cv2
 import numpy as np
 from PIL import Image
 from fundrive.lanzou import download
-from funkeras.model.yolo3 import YoloBody
+from funkeras.models.yolo3 import YoloBody
 from funkeras.utils import read_lines, draw_bbox
 
-root = "/root/workspace/notechats/notekeras/example/yolo"
-classes = read_lines(root + "/data/classes/coco.names")
+# 示例数据/权重根目录因人而异，没有可移植的默认值，统一通过环境变量传入，
+# 避免在模块导入阶段就依赖作者本机路径并发起网络下载。
+root = os.environ.get("FUNKERAS_YOLOV3_ROOT", os.path.join(os.getcwd(), "example", "yolo"))
 
-
-download("https://wws.lanzous.com/b01hjn3aj", dir_pwd=root + "/models/")
+classes = None
+yolo_body = None
 
 
 def get_anchors():
@@ -21,13 +23,17 @@ def get_anchors():
     return np.array(anchors).reshape(-1, 2)
 
 
-anchors = get_anchors()
+def setup():
+    """下载权重（如未缓存）并构建 ``yolo_body``，不在模块导入阶段执行。"""
+    global classes, yolo_body
 
-yolo_body = YoloBody(anchors=anchors, num_classes=len(classes))
-yolo_body.load_weights(root + "/models/yolov3.h5", freeze_body=3)
+    classes = read_lines(root + "/data/classes/coco.names")
+    download("https://wws.lanzous.com/b01hjn3aj", dir_pwd=root + "/models/")
 
-
-# yolo_body.load_layer_weights()
+    anchors = get_anchors()
+    yolo_body = YoloBody(anchors=anchors, num_classes=len(classes))
+    yolo_body.load_weights(root + "/models/yolov3.h5", freeze_body=3)
+    # yolo_body.load_layer_weights()
 
 
 def image_demo(image_path, output):
@@ -79,5 +85,7 @@ def video_demo(video_path):
             break
 
 
-# image_demos(root + "/yolov3/docs/kite.jpg")
-image_demo(root + "/data/images/kite.jpg", root + "/yolov3/results/kite-res.jpg")
+if __name__ == "__main__":
+    setup()
+    # image_demos(root + "/yolov3/docs/kite.jpg")
+    image_demo(root + "/data/images/kite.jpg", root + "/yolov3/results/kite-res.jpg")

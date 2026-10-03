@@ -9,6 +9,15 @@ bookdemo
 work
 *.tfrecord
 example/yolo4/models
+
+# 模型可视化/推理生成的示例图片，可随时重新生成，不入库（codex 审计 #725）
+src/funkeras/models/rcnn/results/*.png
+example/yolo/yolov3/results/yolo-body*.png
+example/yolo/yolov3/results/yolo-train*.png
+
+# 大体积第三方数据集/字体文件，应由用户自行下载到本地，不入库（codex 审计 #725）
+example/yolo/data/dataset/val2014.txt
+src/funkeras/models/rcnn/font/*.ttf
 *.pyc
 __pycache__/
 *.db
