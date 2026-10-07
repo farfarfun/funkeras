@@ -39,6 +39,22 @@ model = textcnn(
 )
 ```
 
+## 示例脚本
+
+YOLOv3 的 Darknet 权重转换脚本不包含本机路径。准备好对应的 `.cfg` 与 `.weights` 文件后，从
+仓库根目录运行：
+
+```bash
+python example/yolo/yolov3/convert.py path/to/yolov3.cfg path/to/yolov3.weights path/to/yolov3.h5
+```
+
+`src/funkeras/features/parse_pandas.py` 的数据处理示例需要一个包含 `ad.csv`、`user.csv` 和
+`click_log.csv` 的数据集目录；CSV 还应具备脚本所使用的用户、广告和点击字段。运行方式为：
+
+```bash
+python -m funkeras.features.parse_pandas path/to/train_preliminary
+```
+
 ## 内容说明
 
 [my blog](http://blog.notechats.cn/)

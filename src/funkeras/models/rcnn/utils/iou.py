@@ -1,8 +1,12 @@
 import copy
 
 import numpy as np
+from farlog import getLogger
 
 from funkeras.models.rcnn.utils.image_processing import get_new_img_size
+
+
+logger = getLogger("funkeras")
 
 
 def union(au, bu, area_intersection):
@@ -104,8 +108,8 @@ def calc_iou(R, img_data, C, class_mapping):
                 tw = np.log((gta[best_bbox, 1] - gta[best_bbox, 0]) / float(w))
                 th = np.log((gta[best_bbox, 3] - gta[best_bbox, 2]) / float(h))
             else:
-                print('roi = {}'.format(best_iou))
-                raise RuntimeError
+                logger.warning('未分类的 ROI IoU: {}'.format(best_iou))
+                raise RuntimeError('无法根据 IoU 为 ROI 分配类别')
 
         class_num = class_mapping[cls_name]
         class_label = len(class_mapping) * [0]

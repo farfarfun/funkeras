@@ -1,3 +1,4 @@
+import argparse
 import configparser
 import io
 import os
@@ -207,9 +208,16 @@ def _main(config_path, weights_path, output_path, weights_only=False, plot_model
         print('Saved model plot to {}.png'.format(output_root))
 
 
+def main():
+    parser = argparse.ArgumentParser(description='将 Darknet YOLOv3 权重转换为 Keras H5 文件。')
+    parser.add_argument('config_path', help='Darknet .cfg 文件路径')
+    parser.add_argument('weights_path', help='Darknet .weights 文件路径')
+    parser.add_argument('output_path', help='输出 .h5 文件路径')
+    parser.add_argument('--weights-only', action='store_true', help='仅保存 Keras 权重')
+    parser.add_argument('--plot-model', action='store_true', help='同时输出模型结构图')
+    args = parser.parse_args()
+    _main(args.config_path, args.weights_path, args.output_path, args.weights_only, args.plot_model)
+
+
 if __name__ == '__main__':
-    root = '/Users/liangtaoniu/workspace/MyDiary/tmp/models/yolo/configs'
-    config_path = '{}/yolov3.cfg'.format(root)
-    weights_path = '{}/yolov3.weights'.format(root)
-    output_path = '{}/yolov3.h5'.format(root)
-    _main(config_path, weights_path, output_path)
+    main()

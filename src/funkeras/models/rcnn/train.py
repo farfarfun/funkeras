@@ -321,7 +321,7 @@ def train(network):
 
                     break
 
-            except Exception:
+            except (IndexError, TypeError, ValueError):
                 logger.exception(f"训练迭代 iter_num={iter_num} 失败，跳过本次迭代继续训练")
                 continue
 

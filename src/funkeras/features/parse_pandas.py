@@ -1,5 +1,7 @@
+import argparse
 from collections import Counter
 from collections.abc import Callable, Iterable
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -164,11 +166,19 @@ def config_agg(configs: dict):
     return agg_info
 
 
-def run():
-    path_root = "/Users/liangtaoniu/tmp/dataset/tencent2020/train_preliminary"
-    path_ad = path_root + '/ad.csv'
-    path_user = path_root + '/user.csv'
-    path_click = path_root + '/click_log.csv'
+def run(path_root: str | Path) -> tuple[Any, Any, Any]:
+    """从指定的数据集目录读取 CSV 并构建训练、验证和测试数据集。
+
+    参数:
+        path_root: 包含 ``ad.csv``、``user.csv`` 与 ``click_log.csv`` 的目录。
+
+    返回:
+        按顺序包含训练、验证和测试数据集的元组。
+    """
+    path_root = Path(path_root)
+    path_ad = path_root / 'ad.csv'
+    path_user = path_root / 'user.csv'
+    path_click = path_root / 'click_log.csv'
 
     feature_pandas = {
         "feature1": {
@@ -294,3 +304,16 @@ def run():
     train_d = df_to_dataset(train, batch_size=batch_size)
     val_d = df_to_dataset(val, shuffle=False, batch_size=batch_size)
     test_d = df_to_dataset(test, shuffle=False, batch_size=batch_size)
+
+    return train_d, val_d, test_d
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description='从 Tencent 2020 数据集 CSV 构建 TensorFlow 数据集。')
+    parser.add_argument('dataset_root', help='包含 ad.csv、user.csv 和 click_log.csv 的目录')
+    args = parser.parse_args()
+    run(args.dataset_root)
+
+
+if __name__ == '__main__':
+    main()
