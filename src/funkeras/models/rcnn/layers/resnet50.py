@@ -3,12 +3,16 @@ from __future__ import print_function
 
 import tensorflow as tf
 import tensorflow.keras.backend as K
+from farlog import getLogger
 from keras.engine.topology import Layer
 from tensorflow.keras import initializers, regularizers
 from tensorflow.keras.layers import Input, Add, Dense, Activation, Flatten, Convolution2D, MaxPooling2D
 from tensorflow.keras.layers import InputSpec, ZeroPadding2D, AveragePooling2D, TimeDistributed
 
 from funkeras.component import Component
+
+
+logger = getLogger("funkeras")
 
 
 class FixedBatchNormalization(Layer):
@@ -93,9 +97,6 @@ class RoiPoolingComponent(Component):
     def call(self, inputs, training=None, mask=None):
         assert (len(inputs) == 2)
         img, rois = inputs[0], inputs[1]
-        nb_channels = tf.shape(inputs[0])[3]
-        print(nb_channels)
-        print(tf.shape(inputs[0]))
         nb_channels = 2048
         outputs = []
         for roi_idx in range(self.num_rois):
@@ -266,7 +267,7 @@ def conv_block_td(input_tensor, kernel_size, filters, stage, block, input_shape,
     conv_name_base = 'res' + str(stage) + block + '_branch'
     bn_name_base = 'bn' + str(stage) + block + '_branch'
 
-    print(input_tensor)
+    logger.debug('conv_block_td 输入张量: {}'.format(input_tensor))
     x = TimeDistributed(
         Convolution2D(nb_filter1, (1, 1), strides=strides, trainable=trainable, kernel_initializer='normal'),
         input_shape=input_shape, name=conv_name_base + '2a')(input_tensor)

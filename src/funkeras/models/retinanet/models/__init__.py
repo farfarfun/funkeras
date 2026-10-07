@@ -1,11 +1,15 @@
 import sys
 
+from farlog import getLogger
 from tensorflow import keras
 
 from funkeras.initializers import PriorProbability
 from funkeras.layers.retinanet import UpSampleLike, RegressBoxes, ClipBoxes, FilterDetections
 from funkeras.models.retinanet.losses import smooth_l1, focal
 from funkeras.models.retinanet.models.retinanet import RetinaNetBox
+
+
+logger = getLogger("funkeras")
 
 
 class BackboneModel(object):
@@ -170,5 +174,5 @@ def check_training_model(model):
     try:
         assert_training_model(model)
     except AssertionError as e:
-        print(e, file=sys.stderr)
+        logger.error(str(e))
         sys.exit(1)
