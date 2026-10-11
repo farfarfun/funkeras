@@ -3,6 +3,7 @@ import os
 
 import matplotlib.pyplot as plt
 import numpy as np
+from farlog import getLogger
 from tensorflow.keras.layers import Input, Dropout, Concatenate
 from tensorflow.keras.layers import LeakyReLU
 from tensorflow.keras.layers import UpSampling2D, Conv2D
@@ -10,6 +11,9 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 
 from .data_loader import DataLoader
+
+
+logger = getLogger("funkeras")
 
 
 class DiscoGAN():
@@ -197,10 +201,10 @@ class DiscoGAN():
 
                 elapsed_time = datetime.datetime.now() - start_time
                 # Plot the progress
-                print("[%d] [%d/%d] time: %s, [d_loss: %f, g_loss: %f]" % (epoch, batch_i,
-                                                                           self.data_loader.n_batches,
-                                                                           elapsed_time,
-                                                                           d_loss[0], g_loss[0]))
+                logger.info("[%d] [%d/%d] time: %s, [d_loss: %f, g_loss: %f]" % (epoch, batch_i,
+                                                                                   self.data_loader.n_batches,
+                                                                                   elapsed_time,
+                                                                                   d_loss[0], g_loss[0]))
 
                 # If at save interval => save generated image samples
                 if batch_i % sample_interval == 0:

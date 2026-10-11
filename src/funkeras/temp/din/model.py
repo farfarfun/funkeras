@@ -9,10 +9,12 @@ import random
 
 import numpy as np
 import tensorflow as tf
+from farlog import getLogger
 
 from funkeras.backend import keras
 
 K = keras.backend
+logger = getLogger("funkeras")
 
 # 设置随机种子，方便复现
 seed = 1234
@@ -157,7 +159,7 @@ class DIN(keras.layers.Layer):
         din_item = keras.layers.Lambda(lambda x: K.concatenate([x[0], x[1]], axis=1))([i_emb, din_attention_fc])
         din_item = share_weights()(din_item)  # (batch_size, 1)
 
-        print("logits:", din_item, target_item_bias_emb)
+        logger.info("logits: {} {}".format(din_item, target_item_bias_emb))
         logits = keras.layers.Add()([din_item, target_item_bias_emb])
 
         label_model = keras.models.Model(inputs=[hist_item_seq, hist_cate_seq, target_item, target_cate, hist_len],
@@ -234,7 +236,7 @@ def din(item_count, cate_count, hidden_units=128):
     din_item = keras.layers.Lambda(lambda x: K.concatenate([x[0], x[1]], axis=1))([i_emb, din_attention_fc])
     din_item = share_weights()(din_item)  # (batch_size, 1)
 
-    print("logits:", din_item, target_item_bias_emb)
+    logger.info("logits: {} {}".format(din_item, target_item_bias_emb))
     logits = keras.layers.Add()([din_item, target_item_bias_emb])
 
     label_model = keras.models.Model(inputs=[hist_item_seq, hist_cate_seq, target_item, target_cate, hist_len],

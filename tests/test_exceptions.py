@@ -36,3 +36,14 @@ def test_feature_config_error_can_be_caught_specifically():
         assert err.context == {"a": 1}
     else:
         raise AssertionError("FeatureConfigError 应该被捕获到")
+
+
+def test_component_requires_inputs_when_as_model():
+    """as_model 模式缺少 inputs 时必须抛出可捕获的领域异常。"""
+    import pytest
+
+    pytest.importorskip("tensorflow")
+    from funkeras.component.core import Component
+
+    with pytest.raises(FunkerasError, match="as_model.*inputs"):
+        Component(as_model=True)
