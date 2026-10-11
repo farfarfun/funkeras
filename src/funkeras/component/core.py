@@ -2,6 +2,8 @@ import numpy as np
 from tensorflow.keras.layers import Dense, Layer
 from tensorflow.keras.models import Model
 
+from funkeras.exceptions import FunkerasError
+
 
 class ComponentLayer(Layer):
     def __init__(self, inputs=None, layer_depth=1, *args, **kwargs):
@@ -44,7 +46,7 @@ class Component(Model):
 
         if self.as_model:
             if inputs is None:
-                raise BaseException("when as_model is True, inputs must be not None")
+                raise FunkerasError("when as_model is True, inputs must not be None")
             self.build(np.shape(inputs)[1:])
             self.outputs = self.call(inputs)
             self.output_layer = self.outputs

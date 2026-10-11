@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from farlog import getLogger
 from tensorflow.keras.layers import BatchNormalization, Activation, Add
 from tensorflow.keras.layers import Conv2D
 from tensorflow.keras.layers import Input, Dense, Flatten
@@ -9,6 +10,9 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.utils import to_categorical
 
 from .data_loader import DataLoader
+
+
+logger = getLogger("funkeras")
 
 
 class PixelDA():
@@ -195,7 +199,7 @@ class PixelDA():
                 test_accs.pop(0)
 
             # Plot the progress
-            print(
+            logger.info(
                 "%d : [D - loss: %.5f, acc: %3d%%], [G - loss: %.5f], [clf - loss: %.5f, acc: %3d%%, test_acc: %3d%% (%3d%%)]" % \
                 (epoch, d_loss[0], 100 * float(d_loss[1]),
                  g_loss[1], g_loss[2], 100 * float(g_loss[-1]),

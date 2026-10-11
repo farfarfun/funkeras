@@ -48,6 +48,15 @@ YOLOv3 的 Darknet 权重转换脚本不包含本机路径。准备好对应的 
 python example/yolo/yolov3/convert.py path/to/yolov3.cfg path/to/yolov3.weights path/to/yolov3.h5
 ```
 
+RetinaNet 单图检测示例需要先从
+[keras-retinanet releases](https://github.com/fizyr/keras-retinanet/releases) 下载 COCO 权重，并提供待检测图片：
+
+```bash
+python example/retinanet/examples/ResNet50RetinaNet.py --weights path/to/resnet50_coco_best_v2.1.0.h5 --image path/to/image.jpg
+```
+
+也可通过 `FUNKERAS_RETINANET_WEIGHTS` 设置默认权重路径。
+
 `src/funkeras/features/parse_pandas.py` 的数据处理示例需要一个包含 `ad.csv`、`user.csv` 和
 `click_log.csv` 的数据集目录；CSV 还应具备脚本所使用的用户、广告和点击字段。运行方式为：
 
